@@ -356,20 +356,9 @@ a {
   text-decoration: none;
 }
 
-.logo__simbolo {
-  width: 32px;
-  height: 32px;
-}
-
-.logo__nome {
-  font-family: var(--fonte-titulo);
-  font-size: 1.9rem;
-  line-height: 1;
-  letter-spacing: 0.02em;
-}
-
-.logo--claro {
-  color: var(--branco);
+.logo__imagem {
+  width: auto;
+  height: 44px;
 }
 
 /* ---------- Seção 1: Topo (hero) ---------- */
@@ -377,6 +366,11 @@ a {
   position: relative;
   overflow: hidden;
   padding: 3rem 0 4rem;
+}
+
+.rodape__logo {
+  width: auto;
+  height: 64px;
 }
 
 /* Brilho verde suave no canto, puramente decorativo */
