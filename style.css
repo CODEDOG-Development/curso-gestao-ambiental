@@ -612,6 +612,10 @@ a {
   width: 100%;
   max-width: 420px;
 }
+/* Ancora a foto pelo topo: se precisar cortar, corta as pernas e não a cabeça */
+.instrutor__foto img {
+  object-position: center top;
+}
 
 .instrutor__nome {
   margin-bottom: 1rem;
