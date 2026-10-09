@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <!-- viewport: sem isso o celular "finge" ser uma tela de desktop e encolhe tudo -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestão Ambiental Estratégica na Prática | Yvira Engenharia</title>
+  <meta name="description" content="Curso ao vivo em 10 e 11 de novembro, às 19h: aprenda a interpretar a licença ambiental, atender condicionantes, organizar a gestão de resíduos, emitir o MTR e responder fiscalizações.">
+  <!-- theme-color: pinta a barra do navegador no celular com o verde da marca -->
+  <meta name="theme-color" content="#0D3D1F">
+
+  <!-- Open Graph: é o que monta o "cartão" do link quando ele é colado no WhatsApp.
+       Depois de publicar, troque og:image e og:url pelo endereço COMPLETO (https://...),
+       porque o WhatsApp não entende caminho relativo. -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Gestão Ambiental Estratégica na Prática">
+  <meta property="og:description" content="Curso ao vivo · 10 e 11 de novembro · 19h · Yvira Engenharia e Meio Ambiente">
+  <meta property="og:image" content="img/og-curso.jpg">
+  <meta property="og:url" content="https://yvira.eco.br/">
+
+  <!-- Fontes da identidade: Pathway Gothic One (títulos) e Questrial (corpo).
+       O preconnect abre a conexão com o Google Fonts mais cedo e acelera o carregamento. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&family=Questrial&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <!-- defer: o JS só roda depois que o HTML terminou de ser lido, sem travar a página -->
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <!-- Link escondido que aparece ao apertar Tab: permite pular direto para o conteúdo -->
+  <a class="pular" href="#conteudo-principal">Pular para o conteúdo</a>
+
+  <!-- ===================== CABEÇALHO ===================== -->
+  <header class="cabecalho">
+    <div class="container cabecalho__conteudo">
+      <a class="logo" href="#topo" aria-label="Yvira Engenharia e Meio Ambiente, voltar ao início">
+        <!-- Símbolo provisório de duas folhas. Troque pelo SVG oficial da Yvira quando tiver o arquivo. -->
+        <svg class="logo__simbolo" viewBox="0 0 40 40" aria-hidden="true">
+          <path d="M19 37C18 24 12 13 3 9c-1 14 5 25 16 28z" fill="#4CAF7D"/>
+          <path d="M21 37c0-15 6-27 16-31 2 15-4 27-16 31z" fill="#1A6B35"/>
+        </svg>
+        <span class="logo__nome">yvira</span>
+      </a>
+      <!-- 1º botão de inscrição (topo) -->
+      <a class="botao botao--pequeno" href="#investimento">Garantir vaga</a>
+    </div>
+  </header>
+
+  <main id="conteudo-principal">
+
+    <!-- ===================== SEÇÃO 1 – TOPO ===================== -->
+    <section class="hero" id="topo">
+      <div class="container hero__grade">
+        <div class="hero__texto">
+          <p class="selo">
+            <span class="selo__ponto" aria-hidden="true"></span>
+            Curso ao vivo · 10 e 11 de novembro · 19h
+          </p>
+
+          <h1 class="hero__titulo">Gestão Ambiental Estratégica na Prática</h1>
+
+          <p class="hero__subtitulo">
+            Você recebeu a responsabilidade ambiental e de resíduos da empresa e ninguém te ensinou como fazer?
+            Em dois encontros ao vivo, você aprende a interpretar a licença ambiental, atender as condicionantes,
+            organizar a gestão de resíduos, emitir e controlar o MTR e responder fiscalizações com segurança.
+          </p>
+
+          <ul class="infos" aria-label="Informações rápidas do curso">
+            <li>2 encontros ao vivo</li>
+            <li>8 horas</li>
+            <li>Certificado</li>
+            <li>Materiais prontos para aplicar na gestão ambiental e de resíduos da sua empresa</li>
+          </ul>
+
+          <a class="botao" href="#investimento">Quero garantir minha vaga</a>
+        </div>
+
+        <!-- data-legenda: texto que aparece no lugar da foto enquanto o arquivo não existir -->
+        <figure class="foto hero__foto" data-legenda="Foto de campo: área de resíduos ou indústria (img/campo-residuos.jpg)">
+          <img src="img/campo-residuos.jpg" alt="Área de armazenamento de resíduos em uma indústria" width="800" height="1000" fetchpriority="high">
+        </figure>
+      </div>
+    </section>
+
+    <!-- ===================== SEÇÃO 2 – PARA QUEM É ===================== -->
+    <section class="secao secao--branca" id="para-quem" aria-labelledby="titulo-para-quem">
+      <div class="container container--estreito">
+        <p class="rotulo">Para quem é</p>
+        <h2 class="secao__titulo" id="titulo-para-quem">Este curso é para você se…</h2>
+
+        <ul class="lista-check">
+          <li class="revelar">Você é TST, analista de qualidade, administrativo, comprador ou supervisor e a parte ambiental "caiu no seu colo".</li>
+          <li class="revelar">Sua empresa tem licença de operação vigente, mas você não sabe exatamente o que ela exige.</li>
+          <li class="revelar">Você emite MTR sem ter certeza se está fazendo certo.</li>
+          <li class="revelar">Você não sabe se a empresa que coleta os resíduos está regular, nem quais documentos deve cobrar dela.</li>
+          <li class="revelar">Uma notificação do órgão ambiental te deixaria sem saber por onde começar.</li>
+          <li class="revelar">Uma auditoria (de cliente, de certificação ou do órgão) se aproxima e você não sabe o que vão pedir nem como se preparar.</li>
+          <li class="revelar">Você quer ganhar segurança técnica na área ambiental da empresa.</li>
+        </ul>
+
+        <p class="destaque revelar">
+          Você não precisa ter formação na área ambiental.
+          Precisa saber <strong>o que fazer, em que ordem e o que guardar como prova.</strong>
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================== SEÇÃO 3 – O PROBLEMA E A VIRADA ===================== -->
+    <section class="secao secao--escura" id="problema" aria-labelledby="titulo-problema">
+      <div class="container problema__grade">
+        <div>
+          <p class="rotulo">O problema</p>
+          <h2 class="secao__titulo" id="titulo-problema">
+            Ter licença ambiental e contratar a destinação dos resíduos não garante que sua empresa esteja regular
+          </h2>
+        </div>
+
+        <div class="problema__pontos">
+          <p class="revelar">Pela Política Nacional de Resíduos Sólidos, contratar terceiros não isenta a empresa geradora da responsabilidade pelos danos causados pelo gerenciamento inadequado dos seus resíduos.</p>
+          <p class="revelar">Condicionante esquecida, MTR mal emitido ou destinador irregular podem virar autuação, multa e problemas para a empresa.</p>
+          <p class="revelar">Na maioria das empresas, quem cuida disso não é da área ambiental. Aprende na correria, com medo de errar e sem ninguém para perguntar.</p>
+          <!-- Citação legal discreta, como rodapé do bloco (pedido do briefing) -->
+          <p class="nota-lei">Lei nº 12.305/2010, art. 27, § 1º.</p>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="virada revelar">
+          <p class="rotulo">A virada</p>
+          <p class="virada__texto">
+            Este curso transforma a obrigação ambiental em rotina:
+            <strong>o que verificar, quando, quem faz e qual evidência guardar.</strong>
+            Sem decoreba de lei, com aplicação prática do início ao fim.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SEÇÃO 4 – O QUE VOCÊ VAI APRENDER ===================== -->
+    <section class="secao" id="conteudo" aria-labelledby="titulo-conteudo">
+      <div class="container">
+        <p class="rotulo">O que você vai aprender</p>
+        <h2 class="secao__titulo" id="titulo-conteudo">Do entendimento à rotina</h2>
+
+        <!-- <ol> porque a ordem importa; a numeração 01, 02... é feita no CSS com counter -->
+        <ol class="modulos">
+          <li class="modulo revelar">
+            <h3 class="modulo__titulo">Legislação ambiental aplicável</h3>
+            <p>Quais leis realmente obrigam a sua empresa e qual é a responsabilidade de quem responde por ela.</p>
+          </li>
+          <li class="modulo revelar">
+            <h3 class="modulo__titulo">Conceitos sem complicação</h3>
+            <p>Aspecto e impacto ambiental, tipos de licença, resíduo Classe I e Classe II, entre outros.</p>
+          </li>
+          <li class="modulo revelar">
+            <h3 class="modulo__titulo">Gestão ambiental da empresa</h3>
+            <p>Como mapear emissões atmosféricas, efluentes e resíduos de cada processo.</p>
+          </li>
+          <li class="modulo revelar">
+            <h3 class="modulo__titulo">Gestão de resíduos</h3>
+            <ul class="modulo__sub">
+              <li><strong>Gerador:</strong> segregação, acondicionamento, armazenamento, mapeamento e inventário.</li>
+              <li><strong>Transportador – MTR e DMR:</strong> como fazer o MTR na prática, entendendo a plataforma.</li>
+            </ul>
+          </li>
+          <li class="modulo revelar">
+            <h3 class="modulo__titulo">Condicionantes da licença</h3>
+            <p>Como ler a licença e transformar cada exigência em tarefa com prazo.</p>
+          </li>
+          <li class="modulo revelar">
+            <h3 class="modulo__titulo">Organização de documentos e procedimentos</h3>
+            <p>Pastas, calendário de vencimentos e procedimentos padrão.</p>
+          </li>
+          <li class="modulo revelar">
+            <h3 class="modulo__titulo">Auditorias e "recebi uma notificação, e agora?"</h3>
+            <p>Como se preparar e responder com técnica e dentro do prazo.</p>
+          </li>
+          <li class="modulo revelar">
+            <h3 class="modulo__titulo">Blindagem ambiental da sua empresa</h3>
+          </li>
+        </ol>
+
+        <!-- 2º botão de inscrição (meio da página) -->
+        <div class="cta-meio">
+          <a class="botao" href="#investimento">Quero garantir minha vaga</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SEÇÃO 5 – O QUE VOCÊ RECEBE ===================== -->
+    <section class="secao secao--branca" id="entregas" aria-labelledby="titulo-entregas">
+      <div class="container">
+        <p class="rotulo">O que você recebe</p>
+        <h2 class="secao__titulo" id="titulo-entregas">Você sai pronto para aplicar na sua empresa</h2>
+
+        <div class="cards cards--3">
+          <article class="card revelar">
+            <div class="card__icone">
+              <!-- Ícone de câmera (aula ao vivo). aria-hidden: é decorativo, o texto já explica -->
+              <svg class="icone" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="2" y="6" width="14" height="12" rx="2"/>
+                <path d="m16 10 6-3v10l-6-3"/>
+              </svg>
+            </div>
+            <h3 class="card__titulo">Encontros ao vivo</h3>
+            <p>8 horas no total, com aula e espaço para tirar dúvidas da sua realidade.</p>
+          </article>
+
+          <article class="card revelar">
+            <div class="card__icone">
+              <!-- Ícone de prancheta com check (kit de materiais) -->
+              <svg class="icone" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 3h6v3H9z"/>
+                <path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/>
+                <path d="m9 14 2 2 4-4"/>
+              </svg>
+            </div>
+            <h3 class="card__titulo">Kit de materiais prontos</h3>
+            <p>Planilhas, modelos e checklists para aplicar na gestão ambiental e de resíduos da empresa.</p>
+          </article>
+
+          <article class="card revelar">
+            <div class="card__icone">
+              <!-- Ícone de medalha (certificado) -->
+              <svg class="icone" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="9" r="6"/>
+                <path d="m8.5 14-1.5 8 5-3 5 3-1.5-8"/>
+              </svg>
+            </div>
+            <h3 class="card__titulo">Certificado de conclusão</h3>
+            <p>Certificado de curso livre com a carga horária de 8 horas.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SEÇÃO 6 – POR QUE É DIFERENTE ===================== -->
+    <section class="secao" id="diferenciais" aria-labelledby="titulo-diferenciais">
+      <div class="container">
+        <p class="rotulo">Por que este curso é diferente</p>
+        <h2 class="secao__titulo" id="titulo-diferenciais">Não é mais um curso de teoria ambiental</h2>
+
+        <!-- Cards lado a lado no desktop e empilhados no celular (o CSS cuida disso) -->
+        <div class="cards cards--diferenciais">
+          <article class="card card--branco card--destaque revelar">
+            <h3 class="card__titulo">Feito para quem não é da área</h3>
+            <p>Linguagem direta, sem pressupor formação ambiental.</p>
+          </article>
+          <article class="card card--branco card--destaque revelar">
+            <h3 class="card__titulo">Prático e aplicável</h3>
+            <p>Cada conteúdo vira uma ferramenta ou tarefa que você aplica na empresa no dia seguinte.</p>
+          </article>
+          <article class="card card--branco card--destaque revelar">
+            <h3 class="card__titulo">Conectado à sua realidade</h3>
+            <p>Os exemplos partem de casos reais de empresas, e você adapta cada etapa ao contexto da sua.</p>
+          </article>
+          <article class="card card--branco card--destaque revelar">
+            <h3 class="card__titulo">Prática de quem assina e responde</h3>
+            <p>O conteúdo vem do que acontece em campo.</p>
+          </article>
+          <article class="card card--branco card--destaque revelar">
+            <h3 class="card__titulo">Ao vivo</h3>
+            <p>Você traz a dúvida da sua empresa e resolve na hora.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SEÇÃO 7 – SOBRE O INSTRUTOR ===================== -->
+    <section class="secao secao--branca" id="instrutor" aria-labelledby="titulo-instrutor">
+      <div class="container instrutor">
+        <figure class="foto instrutor__foto revelar" data-legenda="Foto do Marcelo (img/marcelo.jpg)">
+          <!-- loading="lazy": a foto só baixa quando a pessoa rolar até aqui -->
+          <img src="img/marcelo.jpg" alt="Marcelo da Silva Schorr, engenheiro ambiental e instrutor do curso" width="800" height="1000" loading="lazy">
+        </figure>
+
+        <div class="instrutor__texto">
+          <p class="rotulo">Quem vai te ensinar</p>
+          <h2 class="instrutor__nome" id="titulo-instrutor">Marcelo da Silva Schorr</h2>
+
+          <ul class="chips" aria-label="Formação e experiência">
+            <li>Engenheiro Sanitário e Ambiental (UFFS)</li>
+            <li>Engenheiro de Segurança do Trabalho</li>
+            <li>+ de 8 anos em gestão ambiental</li>
+          </ul>
+
+          <div class="instrutor__bio">
+            <p>
+              Engenheiro Sanitário e Ambiental (UFFS) e Engenheiro de Segurança do Trabalho, com mais de 8 anos de
+              experiência em gestão ambiental. É responsável técnico da Yvira Engenharia e Meio Ambiente e de empresa
+              especializada em transporte, armazenamento temporário e gestão de resíduos Classe I e II.
+            </p>
+            <p>
+              Ao longo da sua trajetória, assessorou empresas e indústrias em licenciamento ambiental, gestão de resíduos,
+              atendimento a fiscalizações, auditorias e conformidade legal. Sua atuação combina conhecimento técnico,
+              domínio da legislação e vivência nos desafios reais das empresas, e é isso que ele traz para o curso:
+              uma abordagem prática, aplicada à rotina de quem precisa gerenciar as obrigações ambientais de um negócio.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SEÇÃO 8 – INVESTIMENTO ===================== -->
+    <section class="secao" id="investimento" aria-labelledby="titulo-investimento">
+      <div class="container">
+        <h2 class="secao__titulo centro" id="titulo-investimento">Investimento</h2>
+
+        <div class="preco revelar">
+          <p class="preco__rotulo">Valor integral de referência</p>
+          <p class="preco__valor"><span class="preco__moeda">R$</span>400</p>
+
+          <ul class="preco__itens">
+            <li>2 encontros ao vivo, 8 horas no total</li>
+            <li>Kit de materiais prontos para aplicar</li>
+            <li>Certificado de conclusão</li>
+          </ul>
+
+          <!-- data-inscricao: o script.js coloca aqui o link de pagamento (ou o WhatsApp, enquanto não houver).
+               O href abaixo é só um "plano B" caso o JS não carregue. -->
+          <a class="botao botao--largo" href="https://wa.me/555196930821" data-inscricao>Garantir minha vaga</a>
+
+          <p class="preco__extra">
+            Quer que a empresa pague?
+            <a href="https://wa.me/555196930821" data-whatsapp="Olá! Tenho interesse no curso Gestão Ambiental Estratégica na Prática e gostaria do texto pronto para pedir o reembolso à minha empresa.">Fale com a gente</a>
+            e enviamos um texto pronto para você solicitar o reembolso.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SEÇÃO 9 – PERGUNTAS FREQUENTES ===================== -->
+    <section class="secao secao--branca" id="faq" aria-labelledby="titulo-faq">
+      <div class="container container--estreito">
+        <p class="rotulo">Perguntas frequentes</p>
+        <h2 class="secao__titulo" id="titulo-faq">Ficou alguma dúvida?</h2>
+
+        <!-- <details>/<summary>: acordeão nativo do HTML. Abre e fecha sem nenhuma linha de JS
+             e já funciona com teclado e leitor de tela. -->
+        <div class="faq">
+          <details class="faq__item">
+            <summary>Preciso ter formação na área ambiental?</summary>
+            <p>Não. O curso foi feito para quem recebeu a demanda sem ser da área.</p>
+          </details>
+          <details class="faq__item">
+            <summary>Serve para empresas que não são indústria?</summary>
+            <p>Sim. Os exemplos incluem a indústria, mas licença, resíduos, MTR e condicionantes valem para qualquer empresa licenciada.</p>
+          </details>
+          <details class="faq__item">
+            <summary>O conteúdo vale para todo o Brasil?</summary>
+            <p>Os princípios e a legislação federal valem para todo o país. Os exemplos estaduais são do Rio Grande do Sul; regras de outros estados podem variar.</p>
+          </details>
+          <details class="faq__item">
+            <summary>Vou receber certificado?</summary>
+            <p>Sim, certificado de curso livre com a carga horária. Ele comprova a capacitação, mas não habilita a assinar responsabilidade técnica.</p>
+          </details>
+          <details class="faq__item">
+            <summary>Posso trazer dúvidas da minha empresa?</summary>
+            <p>Sim. Os encontros têm tempo reservado para isso.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SEÇÃO 10 – CHAMADA FINAL ===================== -->
+    <section class="secao secao--escura final" id="chamada-final" aria-labelledby="titulo-final">
+      <div class="container">
+        <h2 class="final__titulo" id="titulo-final">A demanda ambiental já é sua. Agora você pode saber o que fazer com ela.</h2>
+        <p class="final__texto">
+          Duas noites para sair com a licença entendida, os resíduos sob controle e um plano para a próxima fiscalização.
+          10 e 11 de novembro, às 19h, ao vivo.
+        </p>
+        <!-- 3º botão de inscrição (fim da página) -->
+        <a class="botao botao--claro" href="https://wa.me/555196930821" data-inscricao>Quero minha vaga</a>
+        <p class="final__whats">
+          Dúvidas? Chame no WhatsApp:
+          <a href="https://wa.me/555196930821" data-whatsapp="Olá! Tenho uma dúvida sobre o curso Gestão Ambiental Estratégica na Prática.">51 9693-0821</a>
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== RODAPÉ ===================== -->
+  <footer class="rodape">
+    <div class="container rodape__conteudo">
+      <span class="logo logo--claro">
+        <svg class="logo__simbolo" viewBox="0 0 40 40" aria-hidden="true">
+          <path d="M19 37C18 24 12 13 3 9c-1 14 5 25 16 28z" fill="#4CAF7D"/>
+          <path d="M21 37c0-15 6-27 16-31 2 15-4 27-16 31z" fill="#FFFFFF"/>
+        </svg>
+        <span class="logo__nome">yvira</span>
+      </span>
+      <p>
+        Yvira Engenharia e Meio Ambiente ·
+        <a href="https://yvira.eco.br" target="_blank" rel="noopener">yvira.eco.br</a> ·
+        <a href="https://www.instagram.com/yvira_engenharia" target="_blank" rel="noopener">@yvira_engenharia</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Barra fixa só no celular: mantém o botão de inscrição sempre à mão durante a rolagem.
+       O JS mostra/esconde conforme a seção visível. -->
+  <div class="barra-fixa" id="barra-fixa">
+    <p class="barra-fixa__info"><strong>10 e 11/11 · 19h</strong><br>Curso ao vivo</p>
+    <a class="botao botao--pequeno" href="#investimento">Garantir vaga</a>
+  </div>
+
+</body>
+</html>
