@@ -1,218 +1,1197 @@
 /* =====================================================================
    LANDING PAGE – Gestão Ambiental Estratégica na Prática (Yvira)
-   O que este arquivo faz:
-   1. Monta os links de WhatsApp a partir de um único lugar (CONFIG)
-   2. Envia o formulário de inscrição sem recarregar a página
-   3. Mostra/esconde a barra fixa de inscrição no celular
-   4. Faz os blocos aparecerem suavemente ao rolar a página
-   5. Mostra um espaço reservado quando uma foto ainda não existe
-   A página funciona mesmo sem este arquivo; ele só melhora a experiência.
+   Organização do arquivo:
+   1. Variáveis (identidade visual)
+   2. Base (reset e elementos gerais)
+   3. Componentes reutilizáveis (container, botões, rótulos, fotos, cards)
+   4. Seções, na ordem em que aparecem na página
+   5. Animação de entrada
+   6. Telas maiores (tablet e desktop)
+   Escrito "mobile first": as regras sem @media valem para o celular,
+   e os @media (min-width) no fim só ACRESCENTAM ajustes para telas maiores.
    ===================================================================== */
 
 
-/* =========================== CONFIGURAÇÃO =========================== */
-/* O único trecho que você precisa editar. */
-const CONFIG = {
-  // Número do WhatsApp só com dígitos: 55 (Brasil) + DDD + número.
-  whatsapp: '555196930821',
+/* =========================== 1. VARIÁVEIS =========================== */
+/* Guardar as cores aqui evita repetir o código hexadecimal no arquivo todo:
+   se a marca mudar um tom, você troca em um lugar só. */
+:root {
+  --verde-escuro: #0D3D1F;
+  --verde-medio: #1A6B35;
+  --verde-claro: #4CAF7D;
+  --fundo: #F3FFF8;
+  --branco: #FFFFFF;
 
-  // Link de pagamento (Mercado Pago, PagSeguro, Sympla...). Se for preenchido,
-  // aparece um botão "Ir para o pagamento" depois que a inscrição é enviada.
-  // Deixe vazio ('') para só mostrar a mensagem de que a Yvira vai entrar em contato.
-  linkPagamento: ''
-};
+  --texto: #0D3D1F;
+  --texto-suave: #3E5A47;      /* contraste 7:1 sobre o fundo claro */
+  --texto-no-escuro: #CFE6D7;  /* texto corrido sobre o verde escuro */
+  --borda: rgba(13, 61, 31, 0.12);
 
+  --fonte-titulo: 'Pathway Gothic One', 'Arial Narrow', sans-serif;
+  --fonte-corpo: 'Questrial', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-/* Avisa ao CSS que o JS está ativo (libera a animação de entrada).
-   Se este arquivo não carregar, a classe não existe e nada fica escondido. */
-document.documentElement.classList.add('js');
+  --raio: 14px;
+  --sombra: 0 12px 32px -14px rgba(13, 61, 31, 0.28);
+  --largura-max: 1120px;
+  --altura-cabecalho: 64px;
 
-
-/* =========================== 1. LINKS DE WHATSAPP =========================== */
-
-// Monta o endereço do WhatsApp com a mensagem pronta.
-// encodeURIComponent troca espaços e acentos por códigos que a URL aceita.
-function montarLinkWhatsApp(mensagem) {
-  return `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(mensagem)}`;
-}
-
-function configurarLinksWhatsApp() {
-  // Cada link leva a sua própria mensagem no atributo data-whatsapp
-  document.querySelectorAll('[data-whatsapp]').forEach((link) => {
-    link.href = montarLinkWhatsApp(link.dataset.whatsapp);
-    link.target = '_blank';
-    link.rel = 'noopener'; // a nova aba não ganha acesso a esta página
-  });
+  /* Ícone de "check" usado em várias listas, desenhado em SVG dentro do CSS */
+  --icone-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E");
 }
 
 
-/* =========================== 2. FORMULÁRIO DE INSCRIÇÃO =========================== */
-
-// Máscara do WhatsApp: transforma "51999998888" em "(51) 99999-8888" enquanto a pessoa digita.
-// Aceita fixo (8 dígitos) e celular (9 dígitos) depois do DDD.
-function mascararTelefone(valor) {
-  const digitos = valor.replace(/\D/g, '').slice(0, 11); // \D = tudo que não é número
-
-  if (digitos.length === 0) return '';
-  if (digitos.length <= 2) return `(${digitos}`;
-  if (digitos.length <= 6) return `(${digitos.slice(0, 2)}) ${digitos.slice(2)}`;
-  if (digitos.length <= 10) return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 6)}-${digitos.slice(6)}`;
-  return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 7)}-${digitos.slice(7)}`;
+/* =========================== 2. BASE =========================== */
+/* border-box: a largura de um elemento passa a incluir padding e borda,
+   o que deixa as contas de layout muito mais previsíveis. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-function configurarFormulario() {
-  const formulario = document.getElementById('form-inscricao');
-  if (!formulario) return;
+html {
+  scroll-behavior: smooth;
+  /* Ao clicar num link "#secao", desconta a altura do cabeçalho fixo
+     para o título não ficar escondido embaixo dele. */
+  scroll-padding-top: calc(var(--altura-cabecalho) + 16px);
+  -webkit-text-size-adjust: 100%;
+}
 
-  const botaoEnviar = formulario.querySelector('button[type="submit"]');
-  const status = document.getElementById('form-status');
-  const caixaSucesso = document.getElementById('form-sucesso');
-  const campoWhatsApp = document.getElementById('whatsapp');
-  const textoOriginalBotao = botaoEnviar.textContent;
+body {
+  margin: 0;
+  font-family: var(--fonte-corpo);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--texto);
+  background: var(--fundo);
+  -webkit-font-smoothing: antialiased;
+}
 
-  campoWhatsApp.addEventListener('input', () => {
-    campoWhatsApp.value = mascararTelefone(campoWhatsApp.value);
-  });
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
 
-  // Liga/desliga o estado "enviando": evita que a pessoa clique duas vezes
-  function definirEnviando(enviando) {
-    botaoEnviar.disabled = enviando;
-    botaoEnviar.textContent = enviando ? 'Enviando…' : textoOriginalBotao;
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--fonte-titulo);
+  font-weight: 400; /* a Pathway Gothic One só tem esse peso */
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+p {
+  margin: 0 0 1em;
+}
+
+a {
+  color: var(--verde-medio);
+}
+
+/* Garante que o atributo hidden esconda mesmo elementos que têm "display" no CSS
+   (ex.: o botão de pagamento, que é .botao com display: inline-flex) */
+[hidden] {
+  display: none !important;
+}
+
+/* Contorno visível só para quem navega pelo teclado */
+:focus-visible {
+  outline: 3px solid var(--verde-claro);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Link "Pular para o conteúdo": fica fora da tela até receber foco */
+.pular {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: var(--verde-escuro);
+  color: var(--branco);
+  border-radius: 8px;
+}
+
+.pular:focus {
+  top: 1rem;
+}
+
+
+/* =========================== 3. COMPONENTES =========================== */
+
+/* Container: centraliza o conteúdo e garante 20px de respiro nas laterais */
+.container {
+  width: min(100% - 2.5rem, var(--largura-max));
+  margin-inline: auto;
+}
+
+.container--estreito {
+  width: min(100% - 2.5rem, 760px);
+}
+
+.centro {
+  text-align: center;
+}
+
+/* ---------- Botões ---------- */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 52px; /* área de toque confortável no celular */
+  padding: 0.9rem 1.6rem;
+  background: var(--verde-medio);
+  color: var(--branco);
+  font-family: var(--fonte-corpo);
+  font-size: 1.0625rem;
+  text-align: center;
+  text-decoration: none;
+  border: 0; /* tira a borda padrão quando a classe é usada em <button> */
+  border-radius: 999px;
+  box-shadow: var(--sombra);
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+/* Botão desativado enquanto o formulário está sendo enviado */
+.botao:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
+}
+
+/* Setinha decorativa. O "/ ''" diz ao leitor de tela para não ler a seta. */
+.botao::after {
+  content: '→';
+  content: '→' / '';
+  transition: transform 0.2s;
+}
+
+.botao:hover {
+  background: var(--verde-escuro);
+  transform: translateY(-2px);
+}
+
+.botao:hover::after {
+  transform: translateX(3px);
+}
+
+.botao--pequeno {
+  min-height: 42px;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.95rem;
+  box-shadow: none;
+}
+
+.botao--pequeno::after {
+  content: none;
+}
+
+.botao--largo {
+  width: 100%;
+}
+
+/* Versão para fundo escuro */
+.botao--claro {
+  background: var(--verde-claro);
+  color: var(--verde-escuro);
+}
+
+.botao--claro:hover {
+  background: var(--branco);
+}
+
+/* ---------- Rótulo acima dos títulos ("PARA QUEM É") ---------- */
+.rotulo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--verde-medio);
+}
+
+.rotulo::before {
+  content: '';
+  width: 24px;
+  height: 2px;
+  background: var(--verde-claro);
+}
+
+.secao__titulo {
+  margin-bottom: 2rem;
+  font-size: clamp(2.25rem, 7vw, 3.5rem); /* cresce com a tela, entre 36px e 56px */
+  color: var(--verde-escuro);
+}
+
+/* ---------- Seções e variações de fundo ---------- */
+.secao {
+  padding: 4.5rem 0;
+}
+
+.secao--branca {
+  background: var(--branco);
+}
+
+.secao--escura {
+  background: var(--verde-escuro);
+  color: var(--texto-no-escuro);
+}
+
+.secao--escura .secao__titulo {
+  color: var(--branco);
+}
+
+.secao--escura .rotulo {
+  color: var(--verde-claro);
+}
+
+/* ---------- Fotos (com espaço reservado enquanto a imagem não existe) ---------- */
+.foto {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--raio);
+  background: linear-gradient(160deg, var(--verde-medio), var(--verde-escuro));
+  aspect-ratio: 4 / 5; /* reserva o espaço e evita a página "pular" quando a foto carrega */
+}
+
+.foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Quando a foto é mais alta que a moldura, o cover corta o excesso. Por padrão o corte
+     é igual em cima e embaixo, o que tirava o rosto das fotos de pessoas.
+     "center top" prende a foto pelo topo: o corte passa a acontecer só embaixo. */
+  object-position: center top;
+}
+
+/* O script.js adiciona .foto--vazia quando o arquivo da imagem não é encontrado */
+.foto--vazia img {
+  display: none;
+}
+
+.foto--vazia::after {
+  content: attr(data-legenda);
+  position: absolute;
+  inset: 0.75rem;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  border: 2px dashed rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+}
+
+/* ---------- Cards ---------- */
+.cards {
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  padding: 1.75rem;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+}
+
+.card--branco {
+  background: var(--branco);
+}
+
+.card--destaque {
+  border-top: 3px solid var(--verde-claro);
+}
+
+.card__icone {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1.25rem;
+  background: var(--verde-escuro);
+  color: var(--verde-claro);
+  border-radius: 12px;
+}
+
+/* Os ícones usam stroke="currentColor": herdam a cor definida no elemento pai */
+.icone {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.card__titulo {
+  margin-bottom: 0.5rem;
+  font-size: 1.6rem;
+  color: var(--verde-escuro);
+}
+
+.card p {
+  margin: 0;
+  color: var(--texto-suave);
+}
+
+
+/* =========================== 4. SEÇÕES =========================== */
+
+/* ---------- Cabeçalho ---------- */
+.cabecalho {
+  position: sticky; /* acompanha a rolagem, mantendo o botão no topo */
+  top: 0;
+  z-index: 50;
+  background: rgba(243, 255, 248, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--borda);
+}
+
+.cabecalho__conteudo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--altura-cabecalho);
+}
+
+.logo {
+  display: inline-flex;
+}
+
+/* Fixamos só a altura; width: auto mantém a proporção original do logo */
+.logo__imagem {
+  width: auto;
+  height: 44px;
+}
+
+/* ---------- Seção 1: Topo (hero) ---------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 3rem 0 4rem;
+}
+
+/* Brilho verde suave no canto, puramente decorativo */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -220px;
+  right: -220px;
+  width: 620px;
+  height: 620px;
+  background: radial-gradient(circle, rgba(76, 175, 125, 0.18), transparent 65%);
+  pointer-events: none;
+}
+
+.hero__grade {
+  position: relative; /* fica acima do brilho decorativo */
+  display: grid;
+  gap: 2.5rem;
+  align-items: center;
+}
+
+.selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  color: var(--verde-medio);
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+}
+
+.selo__ponto {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  background: var(--verde-claro);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(76, 175, 125, 0.2);
+}
+
+.hero__titulo {
+  margin-bottom: 1.25rem;
+  font-size: clamp(3rem, 11vw, 5.25rem);
+  color: var(--verde-escuro);
+}
+
+.hero__subtitulo {
+  max-width: 56ch; /* linha com no máximo ~56 caracteres: leitura mais confortável */
+  font-size: 1.125rem;
+  color: var(--texto-suave);
+}
+
+.infos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 1.5rem 0 2rem;
+  padding: 0;
+  list-style: none;
+  font-size: 0.95rem;
+}
+
+.infos li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.infos li::before {
+  content: '';
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  background: var(--verde-claro);
+  border-radius: 50%;
+  transform: translateY(-2px);
+}
+
+.hero__foto {
+  aspect-ratio: 4 / 3; /* no celular a foto fica mais baixa para não empurrar demais a página */
+}
+
+/* ---------- Seção 2: Para quem é ---------- */
+.lista-check {
+  margin: 0 0 2.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.lista-check li {
+  position: relative;
+  padding: 1rem 0 1rem 2.5rem;
+  border-bottom: 1px solid var(--borda);
+}
+
+.lista-check li::before {
+  content: '';
+  position: absolute;
+  top: 1.2rem;
+  left: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--verde-medio) var(--icone-check) center / 14px no-repeat;
+  border-radius: 50%;
+}
+
+.destaque {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-family: var(--fonte-titulo);
+  font-size: clamp(1.6rem, 5vw, 2.1rem);
+  line-height: 1.2;
+  color: var(--verde-escuro);
+  border-left: 3px solid var(--verde-claro);
+}
+
+.destaque strong {
+  font-weight: 400;
+  color: var(--verde-medio);
+}
+
+/* ---------- Seção 3: Problema e virada ---------- */
+.problema__grade {
+  display: grid;
+  gap: 1rem;
+}
+
+.problema__pontos p {
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* O último parágrafo não precisa de linha divisória: não há nada depois dele */
+.problema__pontos p:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.virada {
+  margin-top: 3rem;
+  padding: 2rem 1.5rem;
+  background: var(--verde-medio);
+  border-radius: var(--raio);
+}
+
+.secao--escura .virada .rotulo {
+  color: var(--texto-no-escuro);
+}
+
+.virada .rotulo::before {
+  background: var(--branco);
+}
+
+.virada__texto {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--branco);
+}
+
+/* ---------- Seção 4: O que você vai aprender ---------- */
+.modulos {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: modulo; /* cria um contador chamado "modulo" que começa em 0 */
+}
+
+.modulo {
+  position: relative;
+  padding: 1.5rem;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  counter-increment: modulo; /* cada <li> soma 1 ao contador */
+}
+
+/* Mostra o número do contador com zero à esquerda: 01, 02, 03... */
+.modulo::before {
+  content: counter(modulo, decimal-leading-zero);
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: var(--fonte-titulo);
+  font-size: 2.25rem;
+  line-height: 1;
+  color: var(--verde-claro);
+}
+
+.modulo__titulo {
+  margin-bottom: 0.35rem;
+  font-size: 1.6rem;
+  color: var(--verde-escuro);
+}
+
+.modulo p {
+  margin: 0;
+  color: var(--texto-suave);
+}
+
+.modulo__sub {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+  color: var(--texto-suave);
+}
+
+.modulo__sub li + li {
+  margin-top: 0.4rem;
+}
+
+.modulo__sub li::marker {
+  color: var(--verde-claro);
+}
+
+.modulo__sub strong {
+  color: var(--verde-escuro);
+}
+
+.cta-meio {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+
+/* ---------- Seção 7: Instrutor ---------- */
+.instrutor {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+
+.instrutor__foto {
+  width: 100%;
+  max-width: 420px;
+}
+
+.instrutor__nome {
+  margin-bottom: 1rem;
+  font-size: clamp(2.25rem, 7vw, 3.25rem);
+  color: var(--verde-escuro);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.chips li {
+  padding: 0.35rem 0.8rem;
+  font-size: 0.85rem;
+  color: var(--verde-medio);
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+}
+
+.instrutor__bio p {
+  color: var(--texto-suave);
+}
+
+/* ---------- Seção 8: Investimento ---------- */
+.preco {
+  max-width: 480px;
+  margin-inline: auto;
+  padding: 2.5rem 1.75rem;
+  text-align: center;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 20px;
+  box-shadow: var(--sombra);
+}
+
+.preco__rotulo {
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+  color: var(--texto-suave);
+}
+
+.preco__valor {
+  margin-bottom: 1.5rem;
+  font-family: var(--fonte-titulo);
+  font-size: 5rem;
+  line-height: 1;
+  color: var(--verde-escuro);
+}
+
+.preco__moeda {
+  margin-right: 0.25rem;
+  font-size: 2rem;
+  vertical-align: top;
+  color: var(--verde-medio);
+}
+
+.preco__itens {
+  display: grid;
+  gap: 0.6rem;
+  margin: 0 0 2rem;
+  padding: 1.5rem 0 0;
+  list-style: none;
+  text-align: left;
+  border-top: 1px solid var(--borda);
+}
+
+.preco__itens li {
+  position: relative;
+  padding-left: 1.9rem;
+}
+
+.preco__itens li::before {
+  content: '';
+  position: absolute;
+  top: 0.2rem;
+  left: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--verde-claro) var(--icone-check) center / 11px no-repeat;
+  border-radius: 50%;
+}
+
+.preco__extra {
+  margin: 1.25rem 0 0;
+  font-size: 0.95rem;
+  color: var(--texto-suave);
+}
+
+/* ---------- Seção 8B: Formulário de inscrição ---------- */
+.form__intro {
+  margin-bottom: 2.5rem;
+  color: var(--texto-suave);
+}
+
+/* Cada bloco do formulário (Seus dados, Perfil, Demanda) */
+.form__grupo {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0 0 2.5rem;
+  padding: 0;
+  border: 0;
+  min-width: 0; /* o fieldset tem largura mínima própria; zerar evita estourar a tela no celular */
+}
+
+.form__legenda {
+  width: 100%;
+  padding: 0 0 1rem;
+  font-family: var(--fonte-titulo);
+  font-size: 1.75rem;
+  line-height: 1.1;
+  color: var(--verde-escuro);
+}
+
+/* Um campo = rótulo em cima + caixa de digitação embaixo */
+.campo {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.campo label,
+.opcoes legend {
+  font-size: 0.95rem;
+  color: var(--verde-escuro);
+}
+
+/* Texto auxiliar ao lado do rótulo, entre parênteses: "(opcional)" */
+.campo__dica {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.campo__dica::before {
+  content: '(';
+}
+
+.campo__dica::after {
+  content: ')';
+}
+
+.campo input,
+.campo textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  font: inherit;
+  font-size: 1rem; /* 16px ou mais: evita o iPhone dar zoom sozinho ao tocar no campo */
+  color: var(--texto);
+  background: var(--fundo);
+  border: 1px solid rgba(13, 61, 31, 0.25);
+  border-radius: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.campo textarea {
+  resize: vertical; /* a pessoa pode aumentar a altura, mas não a largura */
+}
+
+.campo input:focus,
+.campo textarea:focus {
+  outline: none; /* trocamos o contorno padrão por borda + brilho verde */
+  border-color: var(--verde-medio);
+  box-shadow: 0 0 0 3px rgba(76, 175, 125, 0.25);
+}
+
+/* :user-invalid só marca de vermelho DEPOIS que a pessoa mexeu no campo,
+   e não assim que a página abre */
+.campo input:user-invalid,
+.campo textarea:user-invalid {
+  border-color: #B3261E;
+}
+
+/* Opções "Como você conheceu o curso?" em formato de pílulas clicáveis */
+.opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.opcoes legend {
+  width: 100%;
+  padding: 0 0 0.5rem;
+}
+
+.opcao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.95rem;
+  background: var(--fundo);
+  border: 1px solid rgba(13, 61, 31, 0.25);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+/* :has() = "a pílula que TEM um radio marcado dentro" fica destacada */
+.opcao:has(input:checked) {
+  background: rgba(76, 175, 125, 0.15);
+  border-color: var(--verde-medio);
+}
+
+/* accent-color pinta radio e checkbox nativos com a cor da marca */
+.opcao input,
+.consentimento input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  accent-color: var(--verde-medio);
+}
+
+.consentimento {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 0 0 1.75rem;
+  font-size: 0.95rem;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.consentimento input {
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+/* Campo armadilha: fora da tela (não usamos display:none porque alguns robôs ignoram campos assim) */
+.campo-armadilha {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form__status {
+  min-height: 1.5em; /* reserva a linha para o texto não "empurrar" a página quando aparecer */
+  margin: 1rem 0 0;
+  font-size: 0.95rem;
+  text-align: center;
+  color: var(--texto-suave);
+}
+
+.form__status--erro {
+  color: #B3261E;
+}
+
+.form-sucesso {
+  padding: 2.5rem 1.75rem;
+  text-align: center;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-top: 3px solid var(--verde-claro);
+  border-radius: var(--raio);
+}
+
+.form-sucesso:focus {
+  outline: none; /* recebe foco só para o leitor de tela anunciar; não precisa de contorno */
+}
+
+.form-sucesso__titulo {
+  margin-bottom: 0.75rem;
+  font-size: 2.25rem;
+  color: var(--verde-escuro);
+}
+
+.form-sucesso p {
+  color: var(--texto-suave);
+}
+
+/* ---------- Seção 9: Perguntas frequentes ---------- */
+.faq {
+  border-top: 1px solid var(--borda);
+}
+
+.faq__item {
+  border-bottom: 1px solid var(--borda);
+}
+
+.faq__item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 0;
+  font-size: 1.1rem;
+  color: var(--verde-escuro);
+  cursor: pointer;
+  list-style: none; /* remove o triângulo padrão (Firefox/Chrome) */
+}
+
+.faq__item summary::-webkit-details-marker {
+  display: none; /* remove o triângulo padrão (Safari) */
+}
+
+/* Sinal de "+" que gira e vira "×" quando a pergunta abre */
+.faq__item summary::after {
+  content: '+';
+  content: '+' / '';
+  flex-shrink: 0;
+  font-family: var(--fonte-titulo);
+  font-size: 1.75rem;
+  line-height: 1;
+  color: var(--verde-medio);
+  transition: transform 0.2s;
+}
+
+.faq__item[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.faq__item p {
+  max-width: 65ch;
+  margin: 0 0 1.25rem;
+  color: var(--texto-suave);
+}
+
+/* ---------- Seção 10: Chamada final ---------- */
+.final {
+  text-align: center;
+}
+
+.final__titulo {
+  max-width: 18ch;
+  margin: 0 auto 1.25rem;
+  font-size: clamp(2.4rem, 8vw, 4rem);
+  color: var(--branco);
+}
+
+.final__texto {
+  max-width: 52ch;
+  margin: 0 auto 2rem;
+  font-size: 1.125rem;
+}
+
+.final__whats {
+  margin: 1.5rem 0 0;
+  font-size: 0.95rem;
+}
+
+.final__whats a {
+  color: var(--verde-claro);
+}
+
+/* ---------- Rodapé ---------- */
+.rodape {
+  /* padding inferior maior no celular para a barra fixa não cobrir o texto */
+  padding: 2rem 0 6rem;
+  font-size: 0.9rem;
+  color: rgba(207, 230, 215, 0.75);
+  background: var(--verde-escuro);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rodape__conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rodape__logo {
+  width: auto;
+  height: 64px;
+}
+
+.rodape p {
+  margin: 0;
+}
+
+.rodape a {
+  color: inherit;
+}
+
+.rodape a:hover {
+  color: var(--branco);
+}
+
+/* ---------- Barra fixa de inscrição (só celular) ---------- */
+.barra-fixa {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--branco);
+  border-top: 1px solid var(--borda);
+  box-shadow: 0 -8px 24px -12px rgba(13, 61, 31, 0.25);
+  /* Começa escondida abaixo da tela. visibility:hidden também tira o botão
+     da navegação por teclado enquanto a barra não aparece. */
+  transform: translateY(100%);
+  visibility: hidden;
+  transition: transform 0.3s, visibility 0.3s;
+}
+
+.barra-fixa--ativa {
+  transform: none;
+  visibility: visible;
+}
+
+.barra-fixa__info {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.3;
+  color: var(--texto-suave);
+}
+
+.barra-fixa__info strong {
+  color: var(--verde-escuro);
+}
+
+
+/* =========================== 5. ANIMAÇÃO DE ENTRADA =========================== */
+/* Só esconde os elementos se o JS estiver ativo (a classe .js é colocada pelo script).
+   Assim, se o JS falhar, nada fica invisível. */
+.js .revelar {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.js .revelar.visivel {
+  opacity: 1;
+  transform: none;
+}
+
+/* Respeita quem configurou o sistema para reduzir animações */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 
-  function mostrarStatus(texto, ehErro) {
-    status.textContent = texto;
-    status.classList.toggle('form__status--erro', ehErro);
+  .js .revelar {
+    opacity: 1;
+    transform: none;
   }
 
-  function mostrarSucesso() {
-    formulario.hidden = true;
-    caixaSucesso.hidden = false;
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
 
-    if (CONFIG.linkPagamento) {
-      const linkPagamento = document.getElementById('link-pagamento');
-      linkPagamento.href = CONFIG.linkPagamento;
-      linkPagamento.hidden = false;
-    }
 
-    // Leva o foco (e a tela) até a mensagem, para ninguém ficar olhando um espaço vazio
-    caixaSucesso.focus();
-    caixaSucesso.scrollIntoView({ block: 'center' });
+/* =========================== 6. TELAS MAIORES =========================== */
+
+/* Tablet (a partir de 640px) */
+@media (min-width: 640px) {
+  .cards--3 {
+    grid-template-columns: repeat(3, 1fr);
   }
 
-  // O evento "submit" só dispara se todos os campos "required" estiverem válidos:
-  // o próprio navegador já mostra o aviso no campo que falta.
-  formulario.addEventListener('submit', async (evento) => {
-    evento.preventDefault(); // impede o recarregamento da página; o envio é feito pelo fetch
-
-    definirEnviando(true);
-    mostrarStatus('', false);
-
-    try {
-      // FormData pega todos os campos do formulário pelo atributo "name"
-      const resposta = await fetch(formulario.action, {
-        method: 'POST',
-        body: new FormData(formulario),
-        headers: { Accept: 'application/json' }
-      });
-
-      // Se o servidor não devolver JSON (ex.: erro 500 em HTML), seguimos com um objeto vazio
-      const dados = await resposta.json().catch(() => ({}));
-
-      if (!resposta.ok || !dados.ok) {
-        throw new Error(dados.mensagem || 'Não foi possível enviar agora.');
-      }
-
-      mostrarSucesso();
-    } catch (erro) {
-      // Erro de rede ou do servidor: avisa a pessoa e oferece o WhatsApp como alternativa
-      mostrarStatus(`${erro.message} Tente novamente ou fale com a gente pelo WhatsApp.`, true);
-    } finally {
-      // "finally" roda dando certo ou errado: o botão sempre volta ao normal
-      definirEnviando(false);
-    }
-  });
-}
-
-
-/* =========================== 3. BARRA FIXA (CELULAR) =========================== */
-/* Regra: a barra aparece enquanto a pessoa rola o meio da página e some quando
-   o Topo, o Investimento, o Formulário ou a Chamada final estão na tela (lá já existe botão). */
-function configurarBarraFixa() {
-  const barra = document.getElementById('barra-fixa');
-  const secoesComBotao = ['topo', 'investimento', 'inscricao', 'chamada-final']
-    .map((id) => document.getElementById(id))
-    .filter(Boolean); // descarta alguma seção que não exista
-
-  // IntersectionObserver avisa quando um elemento entra ou sai da tela,
-  // sem precisar ficar "escutando" cada pixel de rolagem.
-  if (!barra || !('IntersectionObserver' in window)) return;
-
-  const secoesVisiveis = new Set();
-
-  const observador = new IntersectionObserver((entradas) => {
-    entradas.forEach((entrada) => {
-      if (entrada.isIntersecting) {
-        secoesVisiveis.add(entrada.target);
-      } else {
-        secoesVisiveis.delete(entrada.target);
-      }
-    });
-
-    // Nenhuma seção com botão na tela → mostra a barra
-    barra.classList.toggle('barra-fixa--ativa', secoesVisiveis.size === 0);
-  });
-
-  secoesComBotao.forEach((secao) => observador.observe(secao));
-}
-
-
-/* =========================== 4. ANIMAÇÃO AO ROLAR =========================== */
-function configurarRevelacao() {
-  const elementos = document.querySelectorAll('.revelar');
-
-  // Navegador antigo sem IntersectionObserver: mostra tudo de uma vez
-  if (!('IntersectionObserver' in window)) {
-    elementos.forEach((elemento) => elemento.classList.add('visivel'));
-    return;
+  .cards--diferenciais {
+    grid-template-columns: repeat(2, 1fr);
   }
 
-  const observador = new IntersectionObserver((entradas, obs) => {
-    entradas.forEach((entrada) => {
-      if (entrada.isIntersecting) {
-        entrada.target.classList.add('visivel');
-        obs.unobserve(entrada.target); // já apareceu, não precisa mais vigiar
-      }
-    });
-  }, {
-    rootMargin: '0px 0px -10% 0px' // dispara um pouco antes do fim da tela
-  });
+  /* 5 cards em 2 colunas: o último ocupa a linha inteira */
+  .cards--diferenciais .card:last-child {
+    grid-column: 1 / -1;
+  }
 
-  elementos.forEach((elemento) => observador.observe(elemento));
+  /* Número do módulo passa para a lateral esquerda */
+  .modulo {
+    padding: 1.75rem 2rem 1.75rem 5.5rem;
+  }
+
+  .modulo::before {
+    position: absolute;
+    top: 1.6rem;
+    left: 2rem;
+    margin: 0;
+  }
+
+  .preco {
+    padding: 3rem 2.5rem;
+  }
+
+  /* Formulário em duas colunas; campos longos (.campo--inteiro) ocupam a linha toda */
+  .form__grupo {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .campo--inteiro {
+    grid-column: 1 / -1;
+  }
 }
 
+/* Desktop (a partir de 860px) */
+@media (min-width: 860px) {
+  .secao {
+    padding: 6.5rem 0;
+  }
 
-/* =========================== 5. FOTOS AUSENTES =========================== */
-/* Se img/campo-residuos.jpg ou img/marcelo.jpg ainda não existirem,
-   troca o ícone de imagem quebrada por um espaço reservado com legenda. */
-function configurarFotosAusentes() {
-  document.querySelectorAll('.foto img').forEach((imagem) => {
-    const marcarComoVazia = () => imagem.closest('.foto').classList.add('foto--vazia');
+  .hero {
+    padding: 5rem 0 6.5rem;
+  }
 
-    // complete + naturalWidth 0 = a imagem já tentou carregar e falhou antes deste script rodar
-    if (imagem.complete && imagem.naturalWidth === 0) {
-      marcarComoVazia();
-    } else {
-      imagem.addEventListener('error', marcarComoVazia, { once: true });
-    }
-  });
+  .hero__grade {
+    grid-template-columns: 7fr 5fr; /* texto ocupa mais espaço que a foto */
+    gap: 4rem;
+  }
+
+  .hero__foto {
+    aspect-ratio: 4 / 5;
+  }
+
+  .problema__grade {
+    grid-template-columns: 5fr 6fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .virada {
+    padding: 2.5rem 3rem;
+  }
+
+  .virada__texto {
+    font-size: 1.35rem;
+  }
+
+  .modulos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .instrutor {
+    grid-template-columns: 5fr 7fr;
+    gap: 4rem;
+  }
+
+  .rodape {
+    padding-bottom: 2rem;
+  }
+
+  .rodape__conteudo {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* No desktop o botão do cabeçalho já está sempre visível */
+  .barra-fixa {
+    display: none;
+  }
 }
 
+/* Desktop largo (a partir de 1000px): 5 diferenciais em 3 + 2 */
+@media (min-width: 1000px) {
+  /* Grade de 6 colunas: os 3 primeiros ocupam 2 cada, os 2 últimos ocupam 3 cada */
+  .cards--diferenciais {
+    grid-template-columns: repeat(6, 1fr);
+  }
 
-/* =========================== INICIALIZAÇÃO =========================== */
-/* Com o "defer" no <script>, o HTML já está todo pronto quando chegamos aqui. */
-configurarLinksWhatsApp();
-configurarFormulario();
-configurarBarraFixa();
-configurarRevelacao();
-configurarFotosAusentes();
+  .cards--diferenciais .card {
+    grid-column: span 2;
+  }
+
+  .cards--diferenciais .card:nth-child(n + 4) {
+    grid-column: span 3;
+  }
+}
