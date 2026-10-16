@@ -1,10 +1,11 @@
 /* =====================================================================
    LANDING PAGE – Gestão Ambiental Estratégica na Prática (Yvira)
    O que este arquivo faz:
-   1. Monta os links de WhatsApp e de inscrição a partir de um único lugar (CONFIG)
-   2. Mostra/esconde a barra fixa de inscrição no celular
-   3. Faz os blocos aparecerem suavemente ao rolar a página
-   4. Mostra um espaço reservado quando uma foto ainda não existe
+   1. Monta os links de WhatsApp a partir de um único lugar (CONFIG)
+   2. Envia o formulário de inscrição sem recarregar a página
+   3. Mostra/esconde a barra fixa de inscrição no celular
+   4. Faz os blocos aparecerem suavemente ao rolar a página
+   5. Mostra um espaço reservado quando uma foto ainda não existe
    A página funciona mesmo sem este arquivo; ele só melhora a experiência.
    ===================================================================== */
 
@@ -12,15 +13,13 @@
 /* =========================== CONFIGURAÇÃO =========================== */
 /* O único trecho que você precisa editar. */
 const CONFIG = {
-  // Link da plataforma de inscrição/pagamento (Sympla, Hotmart, Mercado Pago...).
-  // Enquanto estiver vazio (''), os botões de inscrição abrem o WhatsApp.
-  linkInscricao: '',
-
   // Número do WhatsApp só com dígitos: 55 (Brasil) + DDD + número.
   whatsapp: '555196930821',
 
-  // Mensagem que já vem escrita quando a pessoa clica para se inscrever pelo WhatsApp
-  mensagemInscricao: 'Olá! Quero garantir minha vaga no curso Gestão Ambiental Estratégica na Prática (10 e 11/11, às 19h).'
+  // Link de pagamento (Mercado Pago, PagSeguro, Sympla...). Se for preenchido,
+  // aparece um botão "Ir para o pagamento" depois que a inscrição é enviada.
+  // Deixe vazio ('') para só mostrar a mensagem de que a Yvira vai entrar em contato.
+  linkPagamento: ''
 };
 
 
@@ -29,7 +28,7 @@ const CONFIG = {
 document.documentElement.classList.add('js');
 
 
-/* =========================== 1. LINKS =========================== */
+/* =========================== 1. LINKS DE WHATSAPP =========================== */
 
 // Monta o endereço do WhatsApp com a mensagem pronta.
 // encodeURIComponent troca espaços e acentos por códigos que a URL aceita.
@@ -37,35 +36,111 @@ function montarLinkWhatsApp(mensagem) {
   return `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(mensagem)}`;
 }
 
-// Abre o link numa nova aba sem dar à outra página acesso a esta (noopener)
-function abrirEmNovaAba(link) {
-  link.target = '_blank';
-  link.rel = 'noopener';
-}
-
-function configurarLinks() {
-  // Links de contato: cada um leva a sua própria mensagem no atributo data-whatsapp
+function configurarLinksWhatsApp() {
+  // Cada link leva a sua própria mensagem no atributo data-whatsapp
   document.querySelectorAll('[data-whatsapp]').forEach((link) => {
     link.href = montarLinkWhatsApp(link.dataset.whatsapp);
-    abrirEmNovaAba(link);
-  });
-
-  // Botões de inscrição: usam o link de pagamento, ou o WhatsApp se ele ainda não existir
-  const destino = CONFIG.linkInscricao || montarLinkWhatsApp(CONFIG.mensagemInscricao);
-
-  document.querySelectorAll('[data-inscricao]').forEach((botao) => {
-    botao.href = destino;
-    abrirEmNovaAba(botao);
+    link.target = '_blank';
+    link.rel = 'noopener'; // a nova aba não ganha acesso a esta página
   });
 }
 
 
-/* =========================== 2. BARRA FIXA (CELULAR) =========================== */
+/* =========================== 2. FORMULÁRIO DE INSCRIÇÃO =========================== */
+
+// Máscara do WhatsApp: transforma "51999998888" em "(51) 99999-8888" enquanto a pessoa digita.
+// Aceita fixo (8 dígitos) e celular (9 dígitos) depois do DDD.
+function mascararTelefone(valor) {
+  const digitos = valor.replace(/\D/g, '').slice(0, 11); // \D = tudo que não é número
+
+  if (digitos.length === 0) return '';
+  if (digitos.length <= 2) return `(${digitos}`;
+  if (digitos.length <= 6) return `(${digitos.slice(0, 2)}) ${digitos.slice(2)}`;
+  if (digitos.length <= 10) return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 6)}-${digitos.slice(6)}`;
+  return `(${digitos.slice(0, 2)}) ${digitos.slice(2, 7)}-${digitos.slice(7)}`;
+}
+
+function configurarFormulario() {
+  const formulario = document.getElementById('form-inscricao');
+  if (!formulario) return;
+
+  const botaoEnviar = formulario.querySelector('button[type="submit"]');
+  const status = document.getElementById('form-status');
+  const caixaSucesso = document.getElementById('form-sucesso');
+  const campoWhatsApp = document.getElementById('whatsapp');
+  const textoOriginalBotao = botaoEnviar.textContent;
+
+  campoWhatsApp.addEventListener('input', () => {
+    campoWhatsApp.value = mascararTelefone(campoWhatsApp.value);
+  });
+
+  // Liga/desliga o estado "enviando": evita que a pessoa clique duas vezes
+  function definirEnviando(enviando) {
+    botaoEnviar.disabled = enviando;
+    botaoEnviar.textContent = enviando ? 'Enviando…' : textoOriginalBotao;
+  }
+
+  function mostrarStatus(texto, ehErro) {
+    status.textContent = texto;
+    status.classList.toggle('form__status--erro', ehErro);
+  }
+
+  function mostrarSucesso() {
+    formulario.hidden = true;
+    caixaSucesso.hidden = false;
+
+    if (CONFIG.linkPagamento) {
+      const linkPagamento = document.getElementById('link-pagamento');
+      linkPagamento.href = CONFIG.linkPagamento;
+      linkPagamento.hidden = false;
+    }
+
+    // Leva o foco (e a tela) até a mensagem, para ninguém ficar olhando um espaço vazio
+    caixaSucesso.focus();
+    caixaSucesso.scrollIntoView({ block: 'center' });
+  }
+
+  // O evento "submit" só dispara se todos os campos "required" estiverem válidos:
+  // o próprio navegador já mostra o aviso no campo que falta.
+  formulario.addEventListener('submit', async (evento) => {
+    evento.preventDefault(); // impede o recarregamento da página; o envio é feito pelo fetch
+
+    definirEnviando(true);
+    mostrarStatus('', false);
+
+    try {
+      // FormData pega todos os campos do formulário pelo atributo "name"
+      const resposta = await fetch(formulario.action, {
+        method: 'POST',
+        body: new FormData(formulario),
+        headers: { Accept: 'application/json' }
+      });
+
+      // Se o servidor não devolver JSON (ex.: erro 500 em HTML), seguimos com um objeto vazio
+      const dados = await resposta.json().catch(() => ({}));
+
+      if (!resposta.ok || !dados.ok) {
+        throw new Error(dados.mensagem || 'Não foi possível enviar agora.');
+      }
+
+      mostrarSucesso();
+    } catch (erro) {
+      // Erro de rede ou do servidor: avisa a pessoa e oferece o WhatsApp como alternativa
+      mostrarStatus(`${erro.message} Tente novamente ou fale com a gente pelo WhatsApp.`, true);
+    } finally {
+      // "finally" roda dando certo ou errado: o botão sempre volta ao normal
+      definirEnviando(false);
+    }
+  });
+}
+
+
+/* =========================== 3. BARRA FIXA (CELULAR) =========================== */
 /* Regra: a barra aparece enquanto a pessoa rola o meio da página e some quando
-   o Topo, o Investimento ou a Chamada final estão na tela (lá já existe botão). */
+   o Topo, o Investimento, o Formulário ou a Chamada final estão na tela (lá já existe botão). */
 function configurarBarraFixa() {
   const barra = document.getElementById('barra-fixa');
-  const secoesComBotao = ['topo', 'investimento', 'chamada-final']
+  const secoesComBotao = ['topo', 'investimento', 'inscricao', 'chamada-final']
     .map((id) => document.getElementById(id))
     .filter(Boolean); // descarta alguma seção que não exista
 
@@ -92,7 +167,7 @@ function configurarBarraFixa() {
 }
 
 
-/* =========================== 3. ANIMAÇÃO AO ROLAR =========================== */
+/* =========================== 4. ANIMAÇÃO AO ROLAR =========================== */
 function configurarRevelacao() {
   const elementos = document.querySelectorAll('.revelar');
 
@@ -117,7 +192,7 @@ function configurarRevelacao() {
 }
 
 
-/* =========================== 4. FOTOS AUSENTES =========================== */
+/* =========================== 5. FOTOS AUSENTES =========================== */
 /* Se img/campo-residuos.jpg ou img/marcelo.jpg ainda não existirem,
    troca o ícone de imagem quebrada por um espaço reservado com legenda. */
 function configurarFotosAusentes() {
@@ -136,7 +211,8 @@ function configurarFotosAusentes() {
 
 /* =========================== INICIALIZAÇÃO =========================== */
 /* Com o "defer" no <script>, o HTML já está todo pronto quando chegamos aqui. */
-configurarLinks();
+configurarLinksWhatsApp();
+configurarFormulario();
 configurarBarraFixa();
 configurarRevelacao();
 configurarFotosAusentes();
