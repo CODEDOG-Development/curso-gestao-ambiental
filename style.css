@@ -91,6 +91,12 @@ a {
   color: var(--verde-medio);
 }
 
+/* Garante que o atributo hidden esconda mesmo elementos que têm "display" no CSS
+   (ex.: o botão de pagamento, que é .botao com display: inline-flex) */
+[hidden] {
+  display: none !important;
+}
+
 /* Contorno visível só para quem navega pelo teclado */
 :focus-visible {
   outline: 3px solid var(--verde-claro);
@@ -145,9 +151,18 @@ a {
   font-size: 1.0625rem;
   text-align: center;
   text-decoration: none;
+  border: 0; /* tira a borda padrão quando a classe é usada em <button> */
   border-radius: 999px;
   box-shadow: var(--sombra);
+  cursor: pointer;
   transition: background-color 0.2s, transform 0.2s;
+}
+
+/* Botão desativado enquanto o formulário está sendo enviado */
+.botao:disabled {
+  opacity: 0.6;
+  cursor: wait;
+  transform: none;
 }
 
 /* Setinha decorativa. O "/ ''" diz ao leitor de tela para não ler a seta. */
@@ -252,6 +267,10 @@ a {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Quando a foto é mais alta que a moldura, o cover corta o excesso. Por padrão o corte
+     é igual em cima e embaixo, o que tirava o rosto das fotos de pessoas.
+     "center top" prende a foto pelo topo: o corte passa a acontecer só embaixo. */
+  object-position: center top;
 }
 
 /* O script.js adiciona .foto--vazia quando o arquivo da imagem não é encontrado */
@@ -350,12 +369,9 @@ a {
 
 .logo {
   display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  color: var(--verde-escuro);
-  text-decoration: none;
 }
 
+/* Fixamos só a altura; width: auto mantém a proporção original do logo */
 .logo__imagem {
   width: auto;
   height: 44px;
@@ -366,11 +382,6 @@ a {
   position: relative;
   overflow: hidden;
   padding: 3rem 0 4rem;
-}
-
-.rodape__logo {
-  width: auto;
-  height: 64px;
 }
 
 /* Brilho verde suave no canto, puramente decorativo */
@@ -507,13 +518,11 @@ a {
   border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-/* A citação da lei: pequena, como rodapé do bloco */
-.problema__pontos .nota-lei {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 0.8rem;
-  color: rgba(207, 230, 215, 0.65);
+/* O último parágrafo não precisa de linha divisória: não há nada depois dele */
+.problema__pontos p:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
 }
 
 .virada {
@@ -612,10 +621,6 @@ a {
   width: 100%;
   max-width: 420px;
 }
-/* Ancora a foto pelo topo: se precisar cortar, corta as pernas e não a cabeça */
-.instrutor__foto img {
-  object-position: center top;
-}
 
 .instrutor__nome {
   margin-bottom: 1rem;
@@ -710,6 +715,191 @@ a {
   color: var(--texto-suave);
 }
 
+/* ---------- Seção 8B: Formulário de inscrição ---------- */
+.form__intro {
+  margin-bottom: 2.5rem;
+  color: var(--texto-suave);
+}
+
+/* Cada bloco do formulário (Seus dados, Perfil, Demanda) */
+.form__grupo {
+  display: grid;
+  gap: 1.25rem;
+  margin: 0 0 2.5rem;
+  padding: 0;
+  border: 0;
+  min-width: 0; /* o fieldset tem largura mínima própria; zerar evita estourar a tela no celular */
+}
+
+.form__legenda {
+  width: 100%;
+  padding: 0 0 1rem;
+  font-family: var(--fonte-titulo);
+  font-size: 1.75rem;
+  line-height: 1.1;
+  color: var(--verde-escuro);
+}
+
+/* Um campo = rótulo em cima + caixa de digitação embaixo */
+.campo {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.campo label,
+.opcoes legend {
+  font-size: 0.95rem;
+  color: var(--verde-escuro);
+}
+
+/* Texto auxiliar ao lado do rótulo, entre parênteses: "(opcional)" */
+.campo__dica {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+.campo__dica::before {
+  content: '(';
+}
+
+.campo__dica::after {
+  content: ')';
+}
+
+.campo input,
+.campo textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  font: inherit;
+  font-size: 1rem; /* 16px ou mais: evita o iPhone dar zoom sozinho ao tocar no campo */
+  color: var(--texto);
+  background: var(--fundo);
+  border: 1px solid rgba(13, 61, 31, 0.25);
+  border-radius: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.campo textarea {
+  resize: vertical; /* a pessoa pode aumentar a altura, mas não a largura */
+}
+
+.campo input:focus,
+.campo textarea:focus {
+  outline: none; /* trocamos o contorno padrão por borda + brilho verde */
+  border-color: var(--verde-medio);
+  box-shadow: 0 0 0 3px rgba(76, 175, 125, 0.25);
+}
+
+/* :user-invalid só marca de vermelho DEPOIS que a pessoa mexeu no campo,
+   e não assim que a página abre */
+.campo input:user-invalid,
+.campo textarea:user-invalid {
+  border-color: #B3261E;
+}
+
+/* Opções "Como você conheceu o curso?" em formato de pílulas clicáveis */
+.opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.opcoes legend {
+  width: 100%;
+  padding: 0 0 0.5rem;
+}
+
+.opcao {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.95rem;
+  background: var(--fundo);
+  border: 1px solid rgba(13, 61, 31, 0.25);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+/* :has() = "a pílula que TEM um radio marcado dentro" fica destacada */
+.opcao:has(input:checked) {
+  background: rgba(76, 175, 125, 0.15);
+  border-color: var(--verde-medio);
+}
+
+/* accent-color pinta radio e checkbox nativos com a cor da marca */
+.opcao input,
+.consentimento input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  accent-color: var(--verde-medio);
+}
+
+.consentimento {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 0 0 1.75rem;
+  font-size: 0.95rem;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
+.consentimento input {
+  flex-shrink: 0;
+  margin-top: 0.25rem;
+}
+
+/* Campo armadilha: fora da tela (não usamos display:none porque alguns robôs ignoram campos assim) */
+.campo-armadilha {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form__status {
+  min-height: 1.5em; /* reserva a linha para o texto não "empurrar" a página quando aparecer */
+  margin: 1rem 0 0;
+  font-size: 0.95rem;
+  text-align: center;
+  color: var(--texto-suave);
+}
+
+.form__status--erro {
+  color: #B3261E;
+}
+
+.form-sucesso {
+  padding: 2.5rem 1.75rem;
+  text-align: center;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-top: 3px solid var(--verde-claro);
+  border-radius: var(--raio);
+}
+
+.form-sucesso:focus {
+  outline: none; /* recebe foco só para o leitor de tela anunciar; não precisa de contorno */
+}
+
+.form-sucesso__titulo {
+  margin-bottom: 0.75rem;
+  font-size: 2.25rem;
+  color: var(--verde-escuro);
+}
+
+.form-sucesso p {
+  color: var(--texto-suave);
+}
+
 /* ---------- Seção 9: Perguntas frequentes ---------- */
 .faq {
   border-top: 1px solid var(--borda);
@@ -798,6 +988,11 @@ a {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.rodape__logo {
+  width: auto;
+  height: 64px;
 }
 
 .rodape p {
@@ -915,6 +1110,15 @@ a {
 
   .preco {
     padding: 3rem 2.5rem;
+  }
+
+  /* Formulário em duas colunas; campos longos (.campo--inteiro) ocupam a linha toda */
+  .form__grupo {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .campo--inteiro {
+    grid-column: 1 / -1;
   }
 }
 
