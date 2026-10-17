@@ -886,8 +886,9 @@ a {
   border-radius: var(--raio);
 }
 
-.form-sucesso:focus {
-  outline: none; /* recebe foco só para o leitor de tela anunciar; não precisa de contorno */
+/* Títulos de etapa recebem foco pelo JS só para o leitor de tela anunciar; não precisam de contorno */
+[tabindex="-1"]:focus {
+  outline: none;
 }
 
 .form-sucesso__titulo {
@@ -898,6 +899,177 @@ a {
 
 .form-sucesso p {
   color: var(--texto-suave);
+}
+
+/* ---------- Página de inscrição (inscricao.html) ---------- */
+.link-voltar {
+  font-size: 0.95rem;
+  color: var(--verde-medio);
+  text-decoration: none;
+}
+
+.link-voltar:hover {
+  text-decoration: underline;
+}
+
+/* Faixa verde com nome, data e valor do curso */
+.resumo-curso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.95rem;
+  color: var(--texto-no-escuro);
+  background: var(--verde-escuro);
+  border-radius: var(--raio);
+}
+
+.resumo-curso p {
+  margin: 0;
+}
+
+.resumo-curso strong {
+  display: block; /* joga a data para a linha de baixo */
+  font-family: var(--fonte-titulo);
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--branco);
+}
+
+.resumo-curso__valor {
+  font-family: var(--fonte-titulo);
+  font-size: 2.25rem;
+  line-height: 1;
+  color: var(--verde-claro);
+}
+
+/* Indicador de etapas: 3 colunas iguais com uma barra no topo de cada uma */
+.etapas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin: 0 0 2.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.etapas__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 0.75rem;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  color: var(--texto-suave);
+  border-top: 3px solid var(--borda);
+}
+
+.etapas__numero {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0; /* o círculo não amassa quando o texto é longo */
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid currentColor; /* currentColor = a mesma cor do texto do item */
+  border-radius: 50%;
+}
+
+/* Etapa já concluída */
+.etapas__item--feita {
+  color: var(--verde-medio);
+  border-top-color: var(--verde-claro);
+}
+
+/* Etapa atual: o seletor de atributo pega o aria-current="step" que o JS coloca */
+.etapas__item[aria-current="step"] {
+  color: var(--verde-escuro);
+  border-top-color: var(--verde-medio);
+}
+
+.etapas__item[aria-current="step"] .etapas__numero {
+  color: var(--branco);
+  background: var(--verde-medio);
+  border-color: var(--verde-medio);
+}
+
+/* Bloco do PIX: QR Code + valor + copia e cola */
+.pix {
+  display: grid;
+  gap: 1.5rem;
+  justify-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1.75rem 1.25rem;
+  background: var(--fundo);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+}
+
+.pix__qrcode {
+  width: 220px;
+  height: 220px;
+  padding: 0.75rem; /* margem branca em volta: ajuda a câmera a ler o QR */
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  border-radius: 12px;
+}
+
+/* No celular o copia e cola vem PRIMEIRO: quem está no celular não consegue
+   escanear um QR que está na própria tela. order: -1 sobe o bloco no grid. */
+.pix__info {
+  order: -1;
+  display: grid;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.pix__info p {
+  margin: 0;
+}
+
+.pix__valor {
+  font-family: var(--fonte-titulo);
+  font-size: 3rem;
+  line-height: 1;
+  color: var(--verde-escuro);
+}
+
+.pix__favorecido {
+  font-size: 0.95rem;
+  color: var(--texto-suave);
+}
+
+.pix__rotulo {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--verde-escuro);
+}
+
+.pix__codigo {
+  width: 100%;
+  padding: 0.75rem;
+  font-family: ui-monospace, Consolas, monospace; /* fonte de largura fixa: código fica legível */
+  font-size: 0.8rem;
+  line-height: 1.4;
+  color: var(--texto);
+  word-break: break-all; /* o código não tem espaços; isso deixa quebrar em qualquer letra */
+  resize: none;
+  background: var(--branco);
+  border: 1px dashed rgba(13, 61, 31, 0.35);
+  border-radius: 10px;
+}
+
+.pix__dica {
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+}
+
+/* Rodapé da página de inscrição: sem a barra fixa, não precisa do espaço extra embaixo */
+.rodape--simples {
+  padding-bottom: 2rem;
 }
 
 /* ---------- Seção 9: Perguntas frequentes ---------- */
@@ -991,6 +1163,7 @@ a {
 }
 
 .rodape__logo {
+  align-self: flex-start; /* no celular o flex em coluna esticaria o logo na largura toda */
   width: auto;
   height: 64px;
 }
@@ -1119,6 +1292,22 @@ a {
 
   .campo--inteiro {
     grid-column: 1 / -1;
+  }
+
+  /* PIX em duas colunas: QR Code à esquerda, informações à direita */
+  .pix {
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    justify-items: start;
+    padding: 2rem;
+  }
+
+  .pix__info {
+    order: 0; /* no computador o QR volta a vir primeiro */
+  }
+
+  .etapas__item {
+    font-size: 0.95rem;
   }
 }
 

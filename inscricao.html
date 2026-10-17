@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inscrição | Gestão Ambiental Estratégica na Prática – Yvira</title>
+  <meta name="theme-color" content="#0D3D1F">
+  <!-- noindex: esta página só faz sentido vindo da landing; não precisa aparecer no Google -->
+  <meta name="robots" content="noindex">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&family=Questrial&display=swap" rel="stylesheet">
+
+  <!-- Mesmo CSS e mesmo JS da landing: o visual fica igual e não duplicamos código -->
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <a class="pular" href="#conteudo-principal">Pular para o conteúdo</a>
+
+  <!-- ===================== CABEÇALHO ===================== -->
+  <header class="cabecalho">
+    <div class="container cabecalho__conteudo">
+      <a class="logo" href="index.html">
+        <img class="logo__imagem" src="img/logo-yvira.png" alt="Yvira Engenharia e Meio Ambiente – voltar à página do curso" width="480" height="236">
+      </a>
+      <a class="link-voltar" href="index.html">← Voltar ao curso</a>
+    </div>
+  </header>
+
+  <main id="conteudo-principal" class="secao secao--branca">
+    <div class="container container--estreito">
+
+      <!-- ===================== RESUMO DO CURSO ===================== -->
+      <!-- Lembra a pessoa do que ela está comprando, em todas as etapas -->
+      <div class="resumo-curso">
+        <p><strong>Gestão Ambiental Estratégica na Prática</strong>Curso ao vivo · 10 e 11 de novembro · 19h</p>
+        <p class="resumo-curso__valor">R$ 400</p>
+      </div>
+
+      <!-- ===================== INDICADOR DE ETAPAS ===================== -->
+      <!-- <ol>: lista em ordem, porque as etapas têm sequência.
+           aria-current="step" marca a etapa atual: o leitor de tela anuncia "etapa atual"
+           e o CSS usa esse mesmo atributo para pintar o item. Quem troca é o script.js. -->
+      <ol class="etapas" aria-label="Etapas da inscrição">
+        <li class="etapas__item" data-indicador="1" aria-current="step"><span class="etapas__numero">1</span> Seus dados</li>
+        <li class="etapas__item" data-indicador="2"><span class="etapas__numero">2</span> Pagamento</li>
+        <li class="etapas__item" data-indicador="3"><span class="etapas__numero">3</span> Confirmação</li>
+      </ol>
+
+      <!-- ===================== ETAPA 1 – DADOS ===================== -->
+      <!-- data-etapa="1": é por esse número que o script.js sabe qual bloco mostrar -->
+      <section class="etapa" data-etapa="1" aria-labelledby="titulo-dados">
+        <!-- tabindex="-1": permite que o JS coloque o foco no título ao trocar de etapa,
+             sem colocar o título na ordem do Tab -->
+        <h1 class="secao__titulo" id="titulo-dados" tabindex="-1">Garanta sua vaga</h1>
+        <p class="form__intro">
+          Preencha seus dados. Na próxima etapa você faz o pagamento via PIX.
+          Os campos marcados como opcionais podem ficar em branco.
+        </p>
+
+        <!-- action: arquivo PHP que recebe os dados e envia o e-mail para a Yvira.
+             method="post": os dados vão no corpo da requisição, e não expostos na URL. -->
+        <form class="form" id="form-inscricao" action="inscricao.php" method="post">
+
+          <!-- fieldset + legend: agrupam campos relacionados e o leitor de tela anuncia o nome do grupo -->
+          <fieldset class="form__grupo">
+            <legend class="form__legenda">Seus dados</legend>
+
+            <div class="campo campo--inteiro">
+              <label for="nome">Nome completo <span class="campo__dica">como deve sair no certificado</span></label>
+              <input type="text" id="nome" name="nome" autocomplete="name" required maxlength="120">
+            </div>
+
+            <div class="campo">
+              <label for="documento">Documento</label>
+              <input type="text" id="documento" name="documento" placeholder="CPF ou RG" required maxlength="30">
+            </div>
+
+            <div class="campo">
+              <label for="email">E-mail</label>
+              <!-- type="email": o navegador já confere o formato e o celular abre o teclado com @ -->
+              <input type="email" id="email" name="email" autocomplete="email" required maxlength="120">
+            </div>
+
+            <div class="campo">
+              <label for="whatsapp">WhatsApp</label>
+              <!-- type="tel" + inputmode="numeric": abre o teclado numérico no celular.
+                   A máscara (51) 99999-9999 é aplicada pelo script.js enquanto a pessoa digita. -->
+              <input type="tel" id="whatsapp" name="whatsapp" autocomplete="tel" inputmode="numeric" placeholder="(51) 99999-9999" required minlength="14" maxlength="15">
+            </div>
+
+            <div class="campo">
+              <label for="cidade">Cidade/UF</label>
+              <input type="text" id="cidade" name="cidade" autocomplete="address-level2" placeholder="Porto Alegre/RS" required maxlength="80">
+            </div>
+          </fieldset>
+
+          <fieldset class="form__grupo">
+            <legend class="form__legenda">Perfil profissional</legend>
+
+            <div class="campo">
+              <label for="cargo">Cargo/função</label>
+              <input type="text" id="cargo" name="cargo" autocomplete="organization-title" required maxlength="80">
+            </div>
+
+            <div class="campo">
+              <label for="empresa">Empresa <span class="campo__dica">opcional</span></label>
+              <input type="text" id="empresa" name="empresa" autocomplete="organization" maxlength="120">
+            </div>
+
+            <div class="campo campo--inteiro">
+              <label for="relacao">Qual é a sua relação com a área ambiental hoje? <span class="campo__dica">opcional</span></label>
+              <textarea id="relacao" name="relacao" rows="3" maxlength="1000"></textarea>
+            </div>
+          </fieldset>
+
+          <fieldset class="form__grupo">
+            <legend class="form__legenda">Sua demanda</legend>
+
+            <div class="campo campo--inteiro">
+              <label for="demanda">
+                Quais temas mais te preocupam hoje? Conte um pouco sobre a sua demanda ou a sua maior dúvida.
+                <span class="campo__dica">opcional</span>
+              </label>
+              <textarea id="demanda" name="demanda" rows="4" maxlength="2000"></textarea>
+            </div>
+
+            <!-- Grupo de opções: um fieldset próprio, porque a pergunta é a "legenda" das opções.
+                 Basta um dos radios ter "required" para o grupo inteiro ficar obrigatório. -->
+            <fieldset class="campo campo--inteiro opcoes">
+              <legend>Como você conheceu o curso?</legend>
+              <label class="opcao"><input type="radio" name="origem" value="Grupo de WhatsApp" required> Grupo de WhatsApp</label>
+              <label class="opcao"><input type="radio" name="origem" value="Instagram"> Instagram</label>
+              <label class="opcao"><input type="radio" name="origem" value="LinkedIn"> LinkedIn</label>
+              <label class="opcao"><input type="radio" name="origem" value="Indicação"> Indicação</label>
+              <label class="opcao"><input type="radio" name="origem" value="Outro"> Outro</label>
+            </fieldset>
+          </fieldset>
+
+          <!-- Consentimento LGPD: caixa SEM "checked", ou seja, começa desmarcada -->
+          <label class="consentimento">
+            <input type="checkbox" name="consentimento" value="sim">
+            <span>Autorizo o uso dos meus dados para comunicação sobre este curso e conteúdos da Yvira.</span>
+          </label>
+
+          <!-- Armadilha para robôs (honeypot): fica invisível para pessoas.
+               Robôs de spam preenchem todos os campos; se este vier preenchido, o PHP descarta o envio. -->
+          <div class="campo-armadilha" aria-hidden="true">
+            <label for="site">Não preencha este campo</label>
+            <input type="text" id="site" name="site" tabindex="-1" autocomplete="off">
+          </div>
+
+          <button class="botao botao--largo" type="submit">Continuar para o pagamento</button>
+
+          <!-- role="status": o leitor de tela anuncia o texto quando o JS o altera (enviando, erro...) -->
+          <p class="form__status" id="form-status" role="status"></p>
+        </form>
+      </section>
+
+      <!-- ===================== ETAPA 2 – PAGAMENTO PIX ===================== -->
+      <!-- hidden: começa escondida; o script.js mostra depois que o formulário é enviado -->
+      <section class="etapa" data-etapa="2" aria-labelledby="titulo-pagamento" hidden>
+        <h2 class="secao__titulo" id="titulo-pagamento" tabindex="-1">Pagamento via PIX</h2>
+        <p class="form__intro">
+          Seus dados foram recebidos. Para garantir a vaga, faça um PIX de <strong>R$ 400,00</strong>
+          pelo QR Code ou pelo código "copia e cola".
+        </p>
+
+        <div class="pix">
+          <!-- QR Code gerado no app do banco da Yvira (PIX estático, já com o valor) -->
+          <img class="pix__qrcode" src="img/qrcode-pix.png" alt="QR Code PIX para pagamento de R$ 400,00 à Yvira" width="240" height="240">
+
+          <div class="pix__info">
+            <p class="pix__valor">R$ 400,00</p>
+            <!-- Mostrar o favorecido dá segurança: a pessoa confere o nome no app do banco antes de pagar.
+                 Use o nome EXATO que aparece no banco ao ler o QR Code. -->
+            <p class="pix__favorecido">Favorecido: <strong>Yvira Engenharia e Meio Ambiente</strong></p>
+
+            <label class="pix__rotulo" for="pix-codigo">PIX copia e cola</label>
+            <!-- readonly: a pessoa pode selecionar e copiar, mas não consegue alterar o código -->
+            <textarea class="pix__codigo" id="pix-codigo" rows="4" readonly>COLE-AQUI-O-CODIGO-PIX-COPIA-E-COLA-GERADO-NO-BANCO</textarea>
+
+            <!-- type="button": sem isso, um <button> fora de formulário pode ter comportamento inesperado -->
+            <button class="botao botao--largo" type="button" id="botao-copiar">Copiar código PIX</button>
+            <p class="pix__dica">No celular: copie o código, abra o app do seu banco e escolha PIX › Copia e cola.</p>
+          </div>
+        </div>
+
+        <button class="botao botao--largo" type="button" id="botao-paguei">Já fiz o pagamento</button>
+      </section>
+
+      <!-- ===================== ETAPA 3 – CONFIRMAÇÃO ===================== -->
+      <section class="etapa" data-etapa="3" aria-labelledby="titulo-confirmacao" hidden>
+        <div class="form-sucesso">
+          <h2 class="form-sucesso__titulo" id="titulo-confirmacao" tabindex="-1">Falta só o comprovante</h2>
+          <p>
+            Envie o comprovante do PIX pelo WhatsApp. Assim que conferirmos o pagamento,
+            confirmamos a sua vaga por lá.
+          </p>
+          <!-- O href é só um "plano B": o script.js troca por um link com a mensagem já escrita e o nome da pessoa -->
+          <a class="botao" id="botao-comprovante" href="https://wa.me/555196930821" target="_blank" rel="noopener">Enviar comprovante pelo WhatsApp</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="rodape rodape--simples">
+    <div class="container rodape__conteudo">
+      <img class="rodape__logo" src="img/logo-yvira-branco.png" alt="Yvira Engenharia e Meio Ambiente" width="640" height="347" loading="lazy">
+      <p>
+        Dúvidas? <a href="https://wa.me/555196930821" data-whatsapp="Olá! Tenho uma dúvida sobre a inscrição no curso Gestão Ambiental Estratégica na Prática.">WhatsApp 51 9693-0821</a>
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>

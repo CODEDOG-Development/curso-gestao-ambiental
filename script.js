@@ -2,11 +2,12 @@
    LANDING PAGE – Gestão Ambiental Estratégica na Prática (Yvira)
    O que este arquivo faz:
    1. Monta os links de WhatsApp a partir de um único lugar (CONFIG)
-   2. Envia o formulário de inscrição sem recarregar a página
+   2. Inscrição em etapas (inscricao.html): dados → pagamento PIX → confirmação
    3. Mostra/esconde a barra fixa de inscrição no celular
    4. Faz os blocos aparecerem suavemente ao rolar a página
    5. Mostra um espaço reservado quando uma foto ainda não existe
-   A página funciona mesmo sem este arquivo; ele só melhora a experiência.
+   O mesmo arquivo serve as duas páginas: cada função confere se os elementos
+   dela existem na página e, se não existirem, simplesmente não faz nada.
    ===================================================================== */
 
 
@@ -14,13 +15,13 @@
 /* O único trecho que você precisa editar. */
 const CONFIG = {
   // Número do WhatsApp só com dígitos: 55 (Brasil) + DDD + número.
-  whatsapp: '555196930821',
-
-  // Link de pagamento (Mercado Pago, PagSeguro, Sympla...). Se for preenchido,
-  // aparece um botão "Ir para o pagamento" depois que a inscrição é enviada.
-  // Deixe vazio ('') para só mostrar a mensagem de que a Yvira vai entrar em contato.
-  linkPagamento: ''
+  whatsapp: '555196930821'
 };
+
+/* MODO DE TESTE: no GitHub Pages o PHP não roda, então o envio do formulário falharia.
+   Quando o endereço do site termina em "github.io", o formulário pula o envio e vai
+   direto para a etapa do PIX. Na Hostinger (yvira.eco.br) isso fica desligado sozinho. */
+const MODO_TESTE = location.hostname.endsWith('github.io');
 
 
 /* Avisa ao CSS que o JS está ativo (libera a animação de entrada).
@@ -46,7 +47,33 @@ function configurarLinksWhatsApp() {
 }
 
 
-/* =========================== 2. FORMULÁRIO DE INSCRIÇÃO =========================== */
+/* =========================== 2. INSCRIÇÃO EM ETAPAS =========================== */
+
+// Mostra a etapa pedida (1, 2 ou 3), esconde as outras e atualiza o indicador do topo.
+function mostrarEtapa(numero) {
+  // Blocos de conteúdo: só o da etapa atual fica visível
+  document.querySelectorAll('[data-etapa]').forEach((etapa) => {
+    // dataset.etapa vem como texto ("2"); Number() converte para comparar com o número
+    etapa.hidden = Number(etapa.dataset.etapa) !== numero;
+  });
+
+  // Indicador do topo: etapas anteriores ficam "feitas", a atual ganha aria-current
+  document.querySelectorAll('[data-indicador]').forEach((item) => {
+    const numeroItem = Number(item.dataset.indicador);
+    item.classList.toggle('etapas__item--feita', numeroItem < numero);
+
+    if (numeroItem === numero) {
+      item.setAttribute('aria-current', 'step');
+    } else {
+      item.removeAttribute('aria-current');
+    }
+  });
+
+  // Volta para o topo e põe o foco no título da etapa: quem usa leitor de tela
+  // ouve o novo título, e ninguém fica olhando o fim de uma página que mudou
+  window.scrollTo(0, 0);
+  document.querySelector(`[data-etapa="${numero}"] [tabindex="-1"]`).focus();
+}
 
 // Máscara do WhatsApp: transforma "51999998888" em "(51) 99999-8888" enquanto a pessoa digita.
 // Aceita fixo (8 dígitos) e celular (9 dígitos) depois do DDD.
@@ -66,7 +93,6 @@ function configurarFormulario() {
 
   const botaoEnviar = formulario.querySelector('button[type="submit"]');
   const status = document.getElementById('form-status');
-  const caixaSucesso = document.getElementById('form-sucesso');
   const campoWhatsApp = document.getElementById('whatsapp');
   const textoOriginalBotao = botaoEnviar.textContent;
 
@@ -85,25 +111,18 @@ function configurarFormulario() {
     status.classList.toggle('form__status--erro', ehErro);
   }
 
-  function mostrarSucesso() {
-    formulario.hidden = true;
-    caixaSucesso.hidden = false;
-
-    if (CONFIG.linkPagamento) {
-      const linkPagamento = document.getElementById('link-pagamento');
-      linkPagamento.href = CONFIG.linkPagamento;
-      linkPagamento.hidden = false;
-    }
-
-    // Leva o foco (e a tela) até a mensagem, para ninguém ficar olhando um espaço vazio
-    caixaSucesso.focus();
-    caixaSucesso.scrollIntoView({ block: 'center' });
-  }
-
   // O evento "submit" só dispara se todos os campos "required" estiverem válidos:
   // o próprio navegador já mostra o aviso no campo que falta.
   formulario.addEventListener('submit', async (evento) => {
     evento.preventDefault(); // impede o recarregamento da página; o envio é feito pelo fetch
+
+    // No GitHub Pages: simula um envio que deu certo e segue para o PIX (nenhum e-mail sai)
+    if (MODO_TESTE) {
+      console.info('Modo de teste: envio simulado, nenhum e-mail foi enviado.');
+      prepararLinkComprovante(document.getElementById('nome').value.trim());
+      mostrarEtapa(2);
+      return; // "return" encerra a função aqui: o código do fetch abaixo não roda
+    }
 
     definirEnviando(true);
     mostrarStatus('', false);
@@ -123,7 +142,10 @@ function configurarFormulario() {
         throw new Error(dados.mensagem || 'Não foi possível enviar agora.');
       }
 
-      mostrarSucesso();
+      // Deu certo: o e-mail já foi para a Yvira. Prepara o link do comprovante com o nome
+      // da pessoa (usado na etapa 3) e avança para o pagamento.
+      prepararLinkComprovante(document.getElementById('nome').value.trim());
+      mostrarEtapa(2);
     } catch (erro) {
       // Erro de rede ou do servidor: avisa a pessoa e oferece o WhatsApp como alternativa
       mostrarStatus(`${erro.message} Tente novamente ou fale com a gente pelo WhatsApp.`, true);
@@ -134,13 +156,51 @@ function configurarFormulario() {
   });
 }
 
+// Monta o link do WhatsApp da etapa 3 já com o nome de quem se inscreveu,
+// para a Yvira saber de quem é o comprovante sem precisar perguntar.
+function prepararLinkComprovante(nome) {
+  const botaoComprovante = document.getElementById('botao-comprovante');
+  const mensagem = `Olá! Sou ${nome} e fiz o PIX da inscrição no curso Gestão Ambiental Estratégica na Prática. Segue o comprovante.`;
+  botaoComprovante.href = montarLinkWhatsApp(mensagem);
+}
+
+// Etapa 2: botão "Copiar código PIX" e botão "Já fiz o pagamento"
+function configurarPagamento() {
+  const botaoCopiar = document.getElementById('botao-copiar');
+  if (!botaoCopiar) return; // não estamos na página de inscrição
+
+  const campoCodigo = document.getElementById('pix-codigo');
+  const textoOriginal = botaoCopiar.textContent;
+
+  botaoCopiar.addEventListener('click', async () => {
+    campoCodigo.select(); // seleciona o texto: se a cópia automática falhar, basta Ctrl+C
+
+    try {
+      // API da área de transferência. Só funciona em site com https (ou no próprio computador).
+      await navigator.clipboard.writeText(campoCodigo.value);
+      botaoCopiar.textContent = 'Código copiado!';
+    } catch {
+      botaoCopiar.textContent = 'Código selecionado: copie com Ctrl+C';
+    }
+
+    // Depois de 3 segundos, o botão volta ao texto original
+    setTimeout(() => {
+      botaoCopiar.textContent = textoOriginal;
+    }, 3000);
+  });
+
+  document.getElementById('botao-paguei').addEventListener('click', () => {
+    mostrarEtapa(3);
+  });
+}
+
 
 /* =========================== 3. BARRA FIXA (CELULAR) =========================== */
 /* Regra: a barra aparece enquanto a pessoa rola o meio da página e some quando
-   o Topo, o Investimento, o Formulário ou a Chamada final estão na tela (lá já existe botão). */
+   o Topo, o Investimento ou a Chamada final estão na tela (lá já existe botão). */
 function configurarBarraFixa() {
   const barra = document.getElementById('barra-fixa');
-  const secoesComBotao = ['topo', 'investimento', 'inscricao', 'chamada-final']
+  const secoesComBotao = ['topo', 'investimento', 'chamada-final']
     .map((id) => document.getElementById(id))
     .filter(Boolean); // descarta alguma seção que não exista
 
@@ -213,6 +273,7 @@ function configurarFotosAusentes() {
 /* Com o "defer" no <script>, o HTML já está todo pronto quando chegamos aqui. */
 configurarLinksWhatsApp();
 configurarFormulario();
+configurarPagamento();
 configurarBarraFixa();
 configurarRevelacao();
 configurarFotosAusentes();

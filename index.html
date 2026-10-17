@@ -159,7 +159,6 @@
             <ul class="modulo__sub">
               <li><strong>Gerador:</strong> segregação, acondicionamento, armazenamento, mapeamento e inventário.</li>
               <li><strong>Transportador – MTR e DMR:</strong> como fazer o MTR na prática, entendendo a plataforma.</li>
-              <li><strong>Destinação Final:</strong> como realizar o encaminhamento correto do residuo gerado, priorizando os processos de reutilização, reciclagem, compostagem, recuperação e aproveitamento energetico.</li>
             </ul>
           </li>
           <li class="modulo revelar">
@@ -315,8 +314,8 @@
             <li>Certificado de conclusão</li>
           </ul>
 
-          <!-- Leva ao formulário de inscrição, logo abaixo -->
-          <a class="botao botao--largo" href="#inscricao">Garantir minha vaga</a>
+          <!-- Leva à página de inscrição (formulário + pagamento PIX) -->
+          <a class="botao botao--largo" href="inscricao.html">Garantir minha vaga</a>
 
           <p class="preco__extra">
             Quer que a empresa pague?
@@ -327,126 +326,8 @@
       </div>
     </section>
 
-    <!-- ===================== SEÇÃO 8B – FORMULÁRIO DE INSCRIÇÃO ===================== -->
-    <section class="secao secao--branca" id="inscricao" aria-labelledby="titulo-inscricao">
-      <div class="container container--estreito">
-        <p class="rotulo">Inscrição</p>
-        <h2 class="secao__titulo" id="titulo-inscricao">Garanta sua vaga</h2>
-        <p class="form__intro">
-          Preencha seus dados abaixo. Assim que recebermos, entramos em contato pelo WhatsApp para confirmar a sua inscrição.
-          Os campos marcados como opcionais podem ficar em branco.
-        </p>
-
-        <!-- action: arquivo PHP que recebe os dados e envia o e-mail para a Yvira.
-             method="post": os dados vão no corpo da requisição, e não expostos na URL. -->
-        <form class="form" id="form-inscricao" action="inscricao.php" method="post">
-
-          <!-- fieldset + legend: agrupam campos relacionados e o leitor de tela anuncia o nome do grupo -->
-          <fieldset class="form__grupo">
-            <legend class="form__legenda">Seus dados</legend>
-
-            <div class="campo campo--inteiro">
-              <label for="nome">Nome completo <span class="campo__dica">como deve sair no certificado</span></label>
-              <input type="text" id="nome" name="nome" autocomplete="name" required maxlength="120">
-            </div>
-
-            <div class="campo">
-              <label for="documento">Documento</label>
-              <input type="text" id="documento" name="documento" placeholder="CPF ou RG" required maxlength="30">
-            </div>
-
-            <div class="campo">
-              <label for="email">E-mail</label>
-              <!-- type="email": o navegador já confere o formato e o celular abre o teclado com @ -->
-              <input type="email" id="email" name="email" autocomplete="email" required maxlength="120">
-            </div>
-
-            <div class="campo">
-              <label for="whatsapp">WhatsApp</label>
-              <!-- type="tel" + inputmode="numeric": abre o teclado numérico no celular.
-                   A máscara (51) 99999-9999 é aplicada pelo script.js enquanto a pessoa digita. -->
-              <input type="tel" id="whatsapp" name="whatsapp" autocomplete="tel" inputmode="numeric" placeholder="(51) 99999-9999" required minlength="14" maxlength="15">
-            </div>
-
-            <div class="campo">
-              <label for="cidade">Cidade/UF</label>
-              <input type="text" id="cidade" name="cidade" autocomplete="address-level2" placeholder="Porto Alegre/RS" required maxlength="80">
-            </div>
-          </fieldset>
-
-          <fieldset class="form__grupo">
-            <legend class="form__legenda">Perfil profissional</legend>
-
-            <div class="campo">
-              <label for="cargo">Cargo/função</label>
-              <input type="text" id="cargo" name="cargo" autocomplete="organization-title" required maxlength="80">
-            </div>
-
-            <div class="campo">
-              <label for="empresa">Empresa <span class="campo__dica">opcional</span></label>
-              <input type="text" id="empresa" name="empresa" autocomplete="organization" maxlength="120">
-            </div>
-
-            <div class="campo campo--inteiro">
-              <label for="relacao">Qual é a sua relação com a área ambiental hoje? <span class="campo__dica">opcional</span></label>
-              <textarea id="relacao" name="relacao" rows="3" maxlength="1000"></textarea>
-            </div>
-          </fieldset>
-
-          <fieldset class="form__grupo">
-            <legend class="form__legenda">Sua demanda</legend>
-
-            <div class="campo campo--inteiro">
-              <label for="demanda">
-                Quais temas mais te preocupam hoje? Conte um pouco sobre a sua demanda ou a sua maior dúvida.
-                <span class="campo__dica">opcional</span>
-              </label>
-              <textarea id="demanda" name="demanda" rows="4" maxlength="2000"></textarea>
-            </div>
-
-            <!-- Grupo de opções: um fieldset próprio, porque a pergunta é a "legenda" das opções.
-                 Basta um dos radios ter "required" para o grupo inteiro ficar obrigatório. -->
-            <fieldset class="campo campo--inteiro opcoes">
-              <legend>Como você conheceu o curso?</legend>
-              <label class="opcao"><input type="radio" name="origem" value="Grupo de WhatsApp" required> Grupo de WhatsApp</label>
-              <label class="opcao"><input type="radio" name="origem" value="Instagram"> Instagram</label>
-              <label class="opcao"><input type="radio" name="origem" value="LinkedIn"> LinkedIn</label>
-              <label class="opcao"><input type="radio" name="origem" value="Indicação"> Indicação</label>
-              <label class="opcao"><input type="radio" name="origem" value="Outro"> Outro</label>
-            </fieldset>
-          </fieldset>
-
-          <!-- Consentimento LGPD: caixa SEM "checked", ou seja, começa desmarcada -->
-          <label class="consentimento">
-            <input type="checkbox" name="consentimento" value="sim">
-            <span>Autorizo o uso dos meus dados para comunicação sobre este curso e conteúdos da Yvira.</span>
-          </label>
-
-          <!-- Armadilha para robôs (honeypot): fica invisível para pessoas.
-               Robôs de spam preenchem todos os campos; se este vier preenchido, o PHP descarta o envio. -->
-          <div class="campo-armadilha" aria-hidden="true">
-            <label for="site">Não preencha este campo</label>
-            <input type="text" id="site" name="site" tabindex="-1" autocomplete="off">
-          </div>
-
-          <button class="botao botao--largo" type="submit">Enviar inscrição</button>
-
-          <!-- role="status": o leitor de tela anuncia o texto quando o JS o altera (enviando, erro...) -->
-          <p class="form__status" id="form-status" role="status"></p>
-        </form>
-
-        <!-- Mensagem de sucesso: começa escondida (hidden) e o script.js mostra após o envio -->
-        <div class="form-sucesso" id="form-sucesso" tabindex="-1" hidden>
-          <h3 class="form-sucesso__titulo">Inscrição recebida!</h3>
-          <p>Obrigado. Em breve entramos em contato pelo WhatsApp para confirmar a sua vaga.</p>
-          <!-- Botão de pagamento: só aparece se houver link em CONFIG.linkPagamento (script.js) -->
-          <a class="botao" id="link-pagamento" href="#" target="_blank" rel="noopener" hidden>Ir para o pagamento</a>
-        </div>
-      </div>
-    </section>
-
     <!-- ===================== SEÇÃO 9 – PERGUNTAS FREQUENTES ===================== -->
-    <section class="secao" id="faq" aria-labelledby="titulo-faq">
+    <section class="secao secao--branca" id="faq" aria-labelledby="titulo-faq">
       <div class="container container--estreito">
         <p class="rotulo">Perguntas frequentes</p>
         <h2 class="secao__titulo" id="titulo-faq">Ficou alguma dúvida?</h2>
@@ -455,23 +336,23 @@
              e já funciona com teclado e leitor de tela. -->
         <div class="faq">
           <details class="faq__item">
-            <summary><strong>Preciso ter formação na área ambiental?</strong></summary>
+            <summary>Preciso ter formação na área ambiental?</summary>
             <p>Não. O curso foi feito para quem recebeu a demanda sem ser da área.</p>
           </details>
           <details class="faq__item">
-            <summary><strong>Serve para empresas que não são indústria?</strong></summary>
+            <summary>Serve para empresas que não são indústria?</summary>
             <p>Sim. Os exemplos incluem a indústria, mas licença, resíduos, MTR e condicionantes valem para qualquer empresa licenciada.</p>
           </details>
           <details class="faq__item">
-            <summary><strong>O conteúdo vale para todo o Brasil?</strong></summary>
+            <summary>O conteúdo vale para todo o Brasil?</summary>
             <p>Os princípios e a legislação federal valem para todo o país. Os exemplos estaduais são do Rio Grande do Sul; regras de outros estados podem variar.</p>
           </details>
           <details class="faq__item">
-            <summary><strong>Vou receber certificado?</strong></summary>
+            <summary>Vou receber certificado?</summary>
             <p>Sim, certificado de curso livre com a carga horária. Ele comprova a capacitação, mas não habilita a assinar responsabilidade técnica.</p>
           </details>
           <details class="faq__item">
-            <summary><strong>Posso trazer dúvidas da minha empresa?</strong></summary>
+            <summary>Posso trazer dúvidas da minha empresa?</summary>
             <p>Sim. Os encontros têm tempo reservado para isso.</p>
           </details>
         </div>
@@ -487,7 +368,7 @@
           10 e 11 de novembro, às 19h, ao vivo.
         </p>
         <!-- 3º botão de inscrição (fim da página) -->
-        <a class="botao botao--claro" href="#inscricao">Quero minha vaga</a>
+        <a class="botao botao--claro" href="inscricao.html">Quero minha vaga</a>
         <p class="final__whats">
           Dúvidas? Chame no WhatsApp:
           <a href="https://wa.me/555196930821" data-whatsapp="Olá! Tenho uma dúvida sobre o curso Gestão Ambiental Estratégica na Prática.">51 9693-0821</a>

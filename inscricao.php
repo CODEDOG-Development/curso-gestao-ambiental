@@ -128,6 +128,9 @@ $corpo = <<<TEXTO
 Nova inscrição recebida pela landing page do curso
 Gestão Ambiental Estratégica na Prática (10 e 11/11, 19h)
 
+PAGAMENTO: PIX de R$ 400,00 PENDENTE. A pessoa foi para a tela do PIX;
+a vaga só é confirmada após o comprovante chegar pelo WhatsApp.
+
 SEUS DADOS
 Nome (certificado): {$dados['nome']}
 Documento: {$dados['documento']}
